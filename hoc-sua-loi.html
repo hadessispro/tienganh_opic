@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Học sửa lỗi</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --teal: #16c5b0;
+        --pink: #ec268f;
+        --ink: #3a3f41;
+        --muted: #9aa0a4;
+        --line: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 36px 30px 70px;
+      }
+      .head {
+        text-align: center;
+        margin-bottom: 34px;
+      }
+      .head h1 {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .head p {
+        font-size: 14px;
+        color: #6b6f72;
+      }
+
+      .section-label {
+        font-size: 12.5px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        margin: 0 0 14px 4px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 34px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 30px 24px;
+        text-align: center;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+      }
+      .card .ic {
+        font-size: 30px;
+        color: var(--teal);
+        margin-bottom: 14px;
+        line-height: 1;
+      }
+      .card h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .card p {
+        font-size: 13.5px;
+        color: #6b6f72;
+        line-height: 1.45;
+      }
+
+      .hr {
+        height: 1px;
+        background: var(--line);
+        margin: 14px 0 26px;
+      }
+      .gram {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 24px 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+      }
+      .gram h2 {
+        font-size: 19px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .gram .beta {
+        background: var(--pink);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: 2px 9px;
+      }
+      .gram p {
+        font-size: 13.5px;
+        color: #6b6f72;
+      }
+      .btn-sum {
+        border: 1px solid #cbd0d4;
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 14px">⚽</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="head">
+        <h1>Học sửa lỗi</h1>
+        <p>Chọn lỗi bạn muốn luyện sửa.</p>
+      </div>
+
+      <div class="section-label">PHÁT ÂM &amp; ĐUÔI TỪ</div>
+      <div class="grid">
+        <div class="card">
+          <div class="ic">ⓟ</div>
+          <h3>Khóa học phát âm</h3>
+          <p>Học phát âm chuẩn từng âm, từng từ.</p>
+        </div>
+        <div class="card">
+          <div class="ic">⇄</div>
+          <h3>Luyện S/es</h3>
+          <p>Đọc đúng đuôi -s/-es ở động từ và danh từ số nhiều.</p>
+        </div>
+        <div class="card">
+          <div class="ic">⇄</div>
+          <h3>Luyện đuôi -ed</h3>
+          <p>Đọc đúng đuôi -ed của động từ quá khứ.</p>
+        </div>
+      </div>
+
+      <div class="section-label">LUYỆN THÌ</div>
+      <div class="grid">
+        <div class="card">
+          <div class="ic">↺</div>
+          <h3>Hiện tại hoàn thành</h3>
+          <p>Phân biệt hiện tại hoàn thành và quá khứ đơn.</p>
+        </div>
+        <div class="card">
+          <div class="ic">✲</div>
+          <h3>Hiện tại tiếp diễn</h3>
+          <p>Phân biệt hiện tại tiếp diễn và hiện tại đơn.</p>
+        </div>
+        <div class="card">
+          <div class="ic">↻</div>
+          <h3>Thì tương lai</h3>
+          <p>Phân biệt "will" và "be going to".</p>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="gram">
+        <div>
+          <h2>Lỗi ngữ pháp bạn hay bị nhất <span class="beta">Beta</span></h2>
+          <p>Nhấn "Tổng hợp lại" để soi các lỗi ngữ pháp bạn hay gặp nha.</p>
+        </div>
+        <button class="btn-sum">↻ Tổng hợp lại</button>
+      </div>
+    </div>
+  </body>
+</html>

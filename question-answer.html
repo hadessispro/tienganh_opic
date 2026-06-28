@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Tập từng câu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5012e6;
+        --pink: #ec268f;
+        --teal: #16c5b0;
+        --cyan: #1ba7e6;
+        --ink: #484d4f;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+        --hover: #ededed;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* ---------- Sidebar (shared) ---------- */
+      .sidebar {
+        width: 230px;
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        padding: 22px 18px;
+        flex-shrink: 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 34px;
+      }
+      .brand .logo {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--ink);
+        text-decoration: none;
+        transition: 0.15s;
+      }
+      .nav a:hover {
+        background: #f5f5f5;
+      }
+      .nav a.active {
+        background: var(--hover);
+      }
+      .nav .ico {
+        width: 18px;
+        text-align: center;
+        opacity: 0.8;
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .btn-buy {
+        border: 1px solid var(--cyan);
+        background: #fff;
+        color: var(--ink);
+        padding: 11px;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .logout {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 14px;
+        color: var(--ink);
+        cursor: pointer;
+        padding-left: 4px;
+      }
+
+      /* ---------- Main ---------- */
+      .main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: 60px 30px;
+        position: relative;
+      }
+      .content {
+        width: 100%;
+        max-width: 1050px;
+      }
+
+      /* Header row */
+      .head-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 40px;
+      }
+      .head-left {
+        max-width: 430px;
+      }
+      .head-left h1 {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .head-left p {
+        font-size: 14.5px;
+        color: #6b6f72;
+        line-height: 1.5;
+      }
+
+      /* Progress card */
+      .prog {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 22px;
+        width: 350px;
+        flex-shrink: 0;
+      }
+      .prog .ttl {
+        text-align: center;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .prog .info {
+        opacity: 0.5;
+      }
+      .prow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 9px;
+        font-size: 13px;
+      }
+      .prow .lbl {
+        width: 42px;
+        color: var(--ink);
+      }
+      .bar {
+        flex: 1;
+        height: 9px;
+        background: #e9eaec;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: var(--purple);
+        width: 0;
+      }
+      .prow .val {
+        width: 46px;
+        text-align: right;
+        color: var(--muted);
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 40px 0;
+      }
+
+      /* Example question */
+      .example {
+        text-align: center;
+        padding: 6px 0;
+      }
+      .example .cap {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .example h2 {
+        font-size: 26px;
+        font-weight: 600;
+        color: #2b2f31;
+        margin-bottom: 28px;
+      }
+      .btn-pill {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 30px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(80, 18, 230, 0.28);
+      }
+      .other {
+        display: block;
+        text-align: right;
+        margin-top: 34px;
+        font-size: 14px;
+        color: var(--ink);
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      /* Floating toast */
+      .toast {
+        position: fixed;
+        right: 26px;
+        bottom: 24px;
+        width: 300px;
+        border: 1px solid #d9cdf7;
+        border-radius: 14px;
+        background: #fff;
+        padding: 16px 18px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      }
+      .toast .th {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+      .toast .badge {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #efeaff;
+        color: var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .toast .th b {
+        color: var(--purple);
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      .toast p {
+        font-size: 13px;
+        color: #6b6f72;
+        line-height: 1.45;
+        margin-bottom: 14px;
+      }
+      .toast .acts {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .btn-grad {
+        flex: 1;
+        border: none;
+        border-radius: 999px;
+        padding: 11px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(90deg, #7a1ee6, #ec268f);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn-text {
+        background: none;
+        border: none;
+        font-family: inherit;
+        font-size: 13.5px;
+        color: var(--muted);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 15px">⚽</span>
+      </div>
+      <nav class="nav">
+        <a href="#"><span class="ico">⌂</span> Trang chủ</a>
+        <a href="#"><span class="ico">▤</span> Thi thử</a>
+        <a href="#" class="active"><span class="ico">⛗</span> Luyện Forecast</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="btn-buy">Mua Xịn</button>
+        <div class="logout"><span>↪</span> Đăng xuất</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="content">
+        <div class="head-row">
+          <div class="head-left">
+            <h1>Luyện Forecast</h1>
+            <p>
+              Luyện theo Part, chủ đề Forecast. Nhận điểm 4 tiêu chí và hướng
+              cải thiện tức thì.
+            </p>
+          </div>
+
+          <div class="prog">
+            <div class="ttl">
+              Cập nhật 17 ngày trước <span class="info">ⓘ</span>
+            </div>
+            <div class="prow">
+              <span class="lbl">Part 1</span
+              ><span class="bar"><i style="width: 0"></i></span
+              ><span class="val">0/192</span>
+            </div>
+            <div class="prow">
+              <span class="lbl">Part 2</span
+              ><span class="bar"><i style="width: 0"></i></span
+              ><span class="val">0/62</span>
+            </div>
+            <div class="prow">
+              <span class="lbl">Part 3</span
+              ><span class="bar"><i style="width: 0"></i></span
+              ><span class="val">0/185</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="example">
+          <div class="cap">Câu ví dụ</div>
+          <h2>Do you like your work or studies?</h2>
+          <button class="btn-pill">Luyện câu này</button>
+          <a class="other">Câu hỏi khác</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating toast -->
+    <div class="toast" id="toast">
+      <div class="th">
+        <span class="badge">◎</span>
+        <b>Thi thử để biết band Speaking của bạn</b>
+      </div>
+      <p>Thi đủ 3 Part (~15 phút) để xem khả năng hiện tại của bạn.</p>
+      <div class="acts">
+        <button class="btn-grad">🎤 Thi thử Full Test</button>
+        <button
+          class="btn-text"
+          onclick="document.getElementById('toast').style.display = 'none'"
+        >
+          Để sau
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

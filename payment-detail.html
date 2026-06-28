@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Thanh toán</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5012e6;
+        --ink: #484d4f;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      /* Top bar */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 30px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .logout {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 26px 30px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--ink);
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* Centered column */
+      .panel {
+        max-width: 520px;
+        margin: 30px auto 80px;
+        text-align: center;
+        padding: 0 20px;
+      }
+      .note {
+        font-size: 14px;
+        color: #5a5f61;
+        margin-bottom: 14px;
+      }
+      .timer {
+        font-size: 22px;
+        font-weight: 600;
+        color: #2b2f31;
+        margin-bottom: 18px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* QR placeholder */
+      .qr {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 28px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+        background:
+          repeating-linear-gradient(0deg, #111 0 8px, #fff 8px 16px),
+          repeating-linear-gradient(90deg, #111 0 8px, #fff 8px 16px);
+        background-blend-mode: difference;
+        image-rendering: pixelated;
+      }
+      .qr .heart {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 30px;
+        height: 30px;
+        background: #fff;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #e23b54;
+      }
+      .qr-hint {
+        font-size: 11px;
+        color: var(--muted);
+        position: absolute;
+        bottom: -18px;
+        left: 0;
+        right: 0;
+      }
+
+      /* Bank box */
+      .bank {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 22px;
+        max-width: 340px;
+        margin: 18px auto 22px;
+        line-height: 1.6;
+        font-size: 14px;
+        color: #4a4f51;
+      }
+      .bank .amt {
+        margin-top: 10px;
+      }
+      .bank b {
+        color: #2b2f31;
+      }
+
+      .email {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 30px;
+      }
+      .help {
+        font-size: 14px;
+        color: var(--ink);
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 15px">⚽</span>
+      </div>
+      <div class="logout"><span>↪</span> Đăng xuất</div>
+    </header>
+
+    <a class="back">← Quay lại</a>
+
+    <div class="panel">
+      <p class="note">Lưu ý: <b>GIỮ NGUYÊN</b> nội dung chuyển khoản.</p>
+      <div class="timer" id="timer">27:51</div>
+
+      <div class="qr">
+        <div class="heart">♥</div>
+        <span class="qr-hint">(mã QR mẫu — thay bằng QR thật sau)</span>
+      </div>
+
+      <div class="bank">
+        MB BANK — 7911235813<br />
+        HO KINH DOANH LUYEN NOI
+        <div class="amt">
+          Số tiền: <b>90.000 VND</b><br />
+          Nội dung CK: <b>LN1M260628010142JB0</b>
+        </div>
+      </div>
+
+      <div class="email">your-email@example.com</div>
+
+      <a class="help"
+        >Chuyển rồi mà chưa được Xịn → nhắn tớ ảnh chuyển khoản và email</a
+      >
+    </div>
+
+    <script>
+      // Mock countdown timer
+      let total = 27 * 60 + 51;
+      const el = document.getElementById("timer");
+      setInterval(() => {
+        if (total <= 0) return;
+        total--;
+        const m = String(Math.floor(total / 60)).padStart(2, "0");
+        const s = String(total % 60).padStart(2, "0");
+        el.textContent = m + ":" + s;
+      }, 1000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Luyện ngữ pháp</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5012e6;
+        --teal: #16c5b0;
+        --pink: #ec268f;
+        --success: #16a34a;
+        --ink: #3a3f41;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+        --base200: #f5f6f8;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .crumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 30px;
+        font-size: 14px;
+      }
+      .crumb a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .crumb .sep {
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        max-width: 1100px;
+        margin: 0 auto;
+        min-height: calc(100vh - 110px);
+      }
+      .vline {
+        background: var(--line);
+      }
+      .col {
+        padding: 14px 30px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .prompt-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .prompt-row .mid {
+        flex: 1;
+        text-align: center;
+        font-size: 16px;
+      }
+      .prompt-row .mid b {
+        color: var(--purple);
+      }
+      .navbtn {
+        border: 1px solid var(--line);
+        background: #f3f4f6;
+        color: #9aa0a4;
+        border-radius: 8px;
+        padding: 7px 13px;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .navbtn.enabled {
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .sentence {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid #f1d9ea;
+        background: #fdf6fb;
+        border-radius: 10px;
+        padding: 16px 18px;
+      }
+      .play {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid var(--teal);
+        color: var(--teal);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        cursor: pointer;
+        flex-shrink: 0;
+        background: #fff;
+      }
+      .sentence .txt {
+        font-size: 20px;
+        color: #2b2f31;
+        line-height: 1.35;
+      }
+
+      .left-foot {
+        margin-top: auto;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .progress {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 3px solid #e3e1ec;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: var(--purple);
+        font-weight: 600;
+      }
+      .btn-rec {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 13px 30px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(80, 18, 230, 0.28);
+      }
+
+      .vocab-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .vocab-row input {
+        flex: 1;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: inherit;
+        font-size: 14px;
+      }
+      .vocab-row input::placeholder {
+        color: #9aa0a4;
+      }
+      .vocab-row a {
+        font-size: 14px;
+        color: var(--pink);
+        text-decoration: underline;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .rule-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px 22px;
+      }
+      .rule-card h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .rule-card h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 18px 0 12px;
+      }
+      .rule {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+      }
+      .rule .l1 {
+        font-size: 14px;
+        margin-bottom: 4px;
+        line-height: 1.4;
+      }
+      .rule .l2 {
+        font-size: 14px;
+        color: #6b6f72;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 18, 40, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 60;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        width: 420px;
+        max-width: 92vw;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+      }
+      .modal-h {
+        border-bottom: 1px solid var(--line);
+        padding: 16px 20px;
+      }
+      .modal-h h3 {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .modal-b {
+        padding: 18px 20px;
+      }
+      .modal-b .lead {
+        text-align: center;
+        font-size: 15px;
+        margin-bottom: 16px;
+      }
+      .pts {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .pts li {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 13.5px;
+        line-height: 1.4;
+        color: #4a4f51;
+      }
+      .pts .pi {
+        color: var(--purple);
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .safe {
+        margin-top: 16px;
+        background: rgba(22, 163, 74, 0.1);
+        border-radius: 6px;
+        padding: 11px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .safe div {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 12px;
+        color: var(--success);
+      }
+      .more {
+        margin-top: 16px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #4b5563;
+        background: #fff;
+        cursor: pointer;
+      }
+      .modal-f {
+        border-top: 1px solid var(--line);
+        background: var(--base200);
+        padding: 16px 20px;
+      }
+      .modal-f .sel {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .chk {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        cursor: pointer;
+      }
+      .chk input {
+        margin-top: 2px;
+        accent-color: var(--purple);
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+      }
+      .chk span {
+        font-size: 12px;
+        line-height: 1.4;
+        color: #4a4f51;
+      }
+      .modal-acts {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .btn-deny {
+        border: 1px solid #9ca3af;
+        background: #fff;
+        color: #4b5563;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .btn-agree {
+        flex: 1;
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 11px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-agree:disabled {
+        background: #c4b6f0;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 14px">⚽</span>
+      </div>
+    </header>
+
+    <nav class="crumb">
+      <a href="#">⌂ Trang chủ</a><span class="sep">›</span>
+      <a href="#">🔧 Học sửa lỗi</a><span class="sep">›</span>
+      <a href="#" id="crumbLast">…</a>
+    </nav>
+
+    <div class="grid">
+      <div class="col left">
+        <div class="prompt-row">
+          <button class="navbtn">← câu trước</button>
+          <div class="mid"><b>Chọn đúng rồi đọc câu</b> phía dưới</div>
+          <button class="navbtn enabled">câu tiếp →</button>
+        </div>
+        <div class="sentence">
+          <button class="play">▶</button>
+          <span class="txt" id="sentence">…</span>
+        </div>
+        <div class="left-foot">
+          <div class="progress">0</div>
+          <button
+            class="btn-rec"
+            onclick="document.getElementById('consent').classList.add('open')"
+          >
+            Ghi âm ngay
+          </button>
+        </div>
+      </div>
+
+      <div class="vline"></div>
+
+      <div class="col">
+        <div class="vocab-row">
+          <input type="text" placeholder="Nhập từ/cụm từ để lưu" />
+          <a>Luyện phát âm</a>
+        </div>
+        <div class="rule-card" id="ruleCard"></div>
+      </div>
+    </div>
+
+    <!-- Consent modal -->
+    <div class="overlay" id="consent">
+      <div class="modal">
+        <div class="modal-h"><h3>ĐIỀU KHOẢN SỬ DỤNG DỊCH VỤ</h3></div>
+        <div class="modal-b">
+          <p class="lead">2 điểm cần nắm:</p>
+          <ul class="pts">
+            <li>
+              <span class="pi">🎤</span> Hệ thống cần lưu và xử lý bản ghi âm
+              giọng nói của bạn để chấm điểm.
+            </li>
+            <li>
+              <span class="pi">✦</span> Cho phép chúng tôi sử dụng dữ liệu giúp
+              bạn nhận điểm chính xác hơn.
+            </li>
+          </ul>
+          <div class="safe">
+            <div>🛡 Dữ liệu được bảo vệ và không bao giờ được bán.</div>
+            <div>↺ Bạn có thể rút lại sự đồng ý trong phần Cài đặt.</div>
+          </div>
+          <button class="more">Xem điều khoản đầy đủ <span>›</span></button>
+        </div>
+        <div class="modal-f">
+          <p class="sel">Vui lòng chọn:</p>
+          <label class="chk"
+            ><input type="checkbox" class="cb" onchange="sync()" /><span
+              >Tôi đồng ý cho phép lưu trữ, xử lý dữ liệu giọng nói để sử dụng
+              dịch vụ</span
+            ></label
+          >
+          <label class="chk"
+            ><input type="checkbox" class="cb" onchange="sync()" /><span
+              >Tôi đồng ý cho phép sử dụng dữ liệu giọng nói (đã được phi danh
+              tính hóa) của mình để cải thiện độ chính xác điểm và huấn luyện hệ
+              thống AI</span
+            ></label
+          >
+          <div class="modal-acts">
+            <button
+              class="btn-deny"
+              onclick="
+                document.getElementById('consent').classList.remove('open')
+              "
+            >
+              Từ chối
+            </button>
+            <button
+              class="btn-agree"
+              id="agreeBtn"
+              disabled
+              onclick="
+                document.getElementById('consent').classList.remove('open')
+              "
+            >
+              Đồng ý
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function sync() {
+        document.getElementById("agreeBtn").disabled = ![
+          ...document.querySelectorAll(".cb"),
+        ].every((c) => c.checked);
+      }
+
+      // ===== Lesson content for all 4 grammar pages =====
+      const LESSONS = {
+        "ed-tail": {
+          crumb: "🎤 Đuôi -ed",
+          sentence: "Last week, I (help / helped) my friend with her homework.",
+          rule: `<h3>Khi nào cần thêm -ed?</h3>
+        <div class="rule"><div class="l1"><b>ĐỘNG TỪ THƯỜNG</b> → khi nói về <b>quá khứ</b></div><div class="l2">Thì thêm <b>-ed</b> (walk → walk<b>ed</b>)</div></div>
+        <h4>Đuôi -ed đọc thế nào?</h4>
+        <div class="rule"><div class="l1"><b>/t/</b> → sau âm câm (k, p, s, ch...)</div><div class="l2">walk<b>ed</b>, watch<b>ed</b>, help<b>ed</b>, ask<b>ed</b></div></div>
+        <div class="rule"><div class="l1"><b>/d/</b> → sau âm rung và nguyên âm</div><div class="l2">play<b>ed</b>, lov<b>ed</b>, liv<b>ed</b>, call<b>ed</b></div></div>
+        <div class="rule"><div class="l1"><b>/ɪd/</b> → sau âm t hoặc d</div><div class="l2">want<b>ed</b>, need<b>ed</b>, start<b>ed</b>, decid<b>ed</b></div></div>`,
+        },
+        "present-perfect": {
+          crumb: "🎤 Hiện tại hoàn thành",
+          sentence: "Đang tạo các câu luyện tập thì hiện tại hoàn thành...",
+          rule: `<h3>Hiện tại hoàn thành hay quá khứ đơn?</h3>
+        <div class="rule"><div class="l1"><b>HIỆN TẠI HOÀN THÀNH</b> → việc còn liên quan tới hiện tại, hoặc chưa rõ thời điểm</div><div class="l2">Dùng have/has + V3 (live → have lived)</div></div>
+        <div class="rule"><div class="l1"><b>QUÁ KHỨ ĐƠN</b> → việc đã kết thúc tại một thời điểm rõ ràng</div><div class="l2">Dùng V2 (live → lived)</div></div>
+        <h4>Dấu hiệu nhận biết</h4>
+        <div class="rule"><div class="l1"><b>Hiện tại hoàn thành</b></div><div class="l2">already, yet, just, ever, never, since, for, so far</div></div>
+        <div class="rule"><div class="l1"><b>Quá khứ đơn</b></div><div class="l2">yesterday, last week, ago, in 2019, when I was young</div></div>`,
+        },
+        "present-continuous": {
+          crumb: "🎤 Hiện tại tiếp diễn",
+          sentence: "Đang tạo các câu luyện tập thì hiện tại tiếp diễn...",
+          rule: `<h3>Hiện tại tiếp diễn hay hiện tại đơn?</h3>
+        <div class="rule"><div class="l1"><b>HIỆN TẠI TIẾP DIỄN</b> → việc đang xảy ra ngay lúc nói</div><div class="l2">Dùng am/is/are + V-ing (work → is working)</div></div>
+        <div class="rule"><div class="l1"><b>HIỆN TẠI ĐƠN</b> → thói quen, sự thật, việc lặp lại</div><div class="l2">Dùng V(s/es) (work → works)</div></div>
+        <h4>Dấu hiệu nhận biết</h4>
+        <div class="rule"><div class="l1"><b>Hiện tại tiếp diễn</b></div><div class="l2">now, right now, at the moment, Look!, Listen!, these days</div></div>
+        <div class="rule"><div class="l1"><b>Hiện tại đơn</b></div><div class="l2">every day, usually, always, often, on Mondays, twice a week</div></div>`,
+        },
+        future: {
+          crumb: "🎤 Thì tương lai",
+          sentence: "Đang tạo các câu luyện tập thì tương lai...",
+          rule: `<h3>"will" hay "be going to"?</h3>
+        <div class="rule"><div class="l1"><b>BE GOING TO</b> → kế hoạch đã định trước, hoặc dự đoán có bằng chứng ngay trước mắt</div><div class="l2">Dùng am/is/are going to + V (going to rain)</div></div>
+        <div class="rule"><div class="l1"><b>WILL</b> → quyết định ngay lúc nói, lời hứa, lời mời, ý kiến cá nhân</div><div class="l2">Dùng will + V (will get it)</div></div>
+        <h4>Dấu hiệu nhận biết</h4>
+        <div class="rule"><div class="l1"><b>be going to</b></div><div class="l2">đã lên kế hoạch, "Look at...", có dấu hiệu rõ ràng</div></div>
+        <div class="rule"><div class="l1"><b>will</b></div><div class="l2">I think, probably, maybe, quyết định bất chợt, lời hứa</div></div>`,
+        },
+      };
+
+      // === Pick which lesson to show ===
+      // Change this key, or read it from the URL path.
+      const LESSON = "ed-tail"; // 'ed-tail' | 'present-perfect' | 'present-continuous' | 'future'
+
+      const data = LESSONS[LESSON];
+      document.getElementById("crumbLast").textContent = data.crumb;
+      document.getElementById("sentence").textContent = data.sentence;
+      document.getElementById("ruleCard").innerHTML = data.rule;
+    </script>
+  </body>
+</html>

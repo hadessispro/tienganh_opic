@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luyện Nói: Sổ từ vựng</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#5012e6; --teal:#16c5b0; --cyan:#1ba7e6;
+    --ink:#484d4f; --muted:#7a8084; --line:#e5e7eb; --hover:#ededed;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Lexend',system-ui,sans-serif;color:var(--ink);background:#fff;display:flex;min-height:100vh}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{width:240px;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 18px;flex-shrink:0}
+  .brand{display:flex;align-items:center;gap:9px;font-size:20px;font-weight:600;margin-bottom:34px}
+  .brand .logo{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7aa9ff,#2b5bd6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+  .nav{display:flex;flex-direction:column;gap:4px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:8px;font-size:14px;color:var(--ink);text-decoration:none}
+  .nav a:hover{background:#f5f5f5}
+  .nav a.active{background:var(--hover)}
+  .nav .ico{width:18px;text-align:center;opacity:.8}
+  .sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:16px;align-items:center}
+  .counter{width:78px;height:78px;border-radius:50%;border:6px solid #e3e1ec;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .counter b{font-size:24px;color:var(--purple);line-height:1}
+  .counter small{font-size:11px;color:var(--muted)}
+  .btn-buy{width:100%;border:1px solid var(--cyan);background:#fff;color:var(--ink);padding:11px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+  .account{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer;align-self:flex-start}
+
+  /* ---------- Main ---------- */
+  .main{flex:1;display:flex;justify-content:center;padding:24px 30px}
+  .content{width:100%;max-width:1000px}
+  .back{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;margin-bottom:14px}
+
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:30px}
+  .head h1{font-size:26px;font-weight:700;margin-bottom:10px}
+  .head p{font-size:14px;color:#6b6f72;line-height:1.5;max-width:430px}
+  .vbadge{width:74px;height:74px;border-radius:50%;border:2px solid var(--teal);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;flex-shrink:0}
+
+  .divider{height:1px;background:var(--line);margin:22px 0}
+
+  /* Add row */
+  .add-row{display:flex;justify-content:center;gap:10px;margin-bottom:28px}
+  .add-row input[type=text]{width:320px;border:1px solid var(--line);border-radius:8px;padding:11px 14px;font-family:inherit;font-size:14px}
+  .add-row input::placeholder{color:#9aa0a4}
+  .select{position:relative}
+  .select select{appearance:none;border:1px solid var(--line);border-radius:8px;padding:11px 36px 11px 14px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer}
+  .select::after{content:"▾";position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:12px}
+  .btn-save{background:#e5e7eb;color:#9aa0a4;border:none;border-radius:999px;padding:11px 22px;font-family:inherit;font-size:14px;font-weight:600;cursor:not-allowed}
+  .btn-save.active{background:var(--purple);color:#fff;cursor:pointer}
+
+  .empty{text-align:center;color:var(--muted);font-size:14px;padding:10px 0 60px}
+
+  /* ---------- Modals ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(20,18,40,.42);display:none;align-items:center;justify-content:center;z-index:60}
+  .overlay.open{display:flex}
+  .modal{width:420px;max-width:92vw;background:#fff;border-radius:14px;padding:24px;box-shadow:0 22px 55px rgba(0,0,0,.22);position:relative}
+  .modal h3{font-size:18px;font-weight:700;margin-bottom:8px}
+  .modal p{font-size:14px;color:#6b6f72;margin-bottom:20px}
+  .modal .close{position:absolute;top:14px;right:16px;border:none;background:none;font-size:18px;color:var(--muted);cursor:pointer}
+  .modal-acts{display:flex;justify-content:flex-end;gap:10px}
+  .btn-cancel{border:1px solid #9ca3af;background:#fff;color:#4b5563;border-radius:999px;padding:9px 20px;font-family:inherit;font-size:13px;cursor:pointer}
+  .btn-go{background:var(--purple);color:#fff;border:none;border-radius:999px;padding:9px 22px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">S</span> Luyện Nói <span style="font-size:15px">⚽</span></div>
+    <nav class="nav">
+      <a href="#"><span class="ico">⌂</span> Trang chủ</a>
+      <a href="#"><span class="ico">▤</span> Thi thử</a>
+      <a href="#"><span class="ico">⛗</span> Luyện Forecast</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="counter"><b>0</b><small>/25</small></div>
+      <button class="btn-buy">Mua Xịn</button>
+      <div class="account"><span>◍</span> Tài khoản ▾</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="content">
+      <div class="back">← Quay lại</div>
+
+      <div class="head">
+        <div>
+          <h1>Các bộ Từ vựng bạn lưu</h1>
+          <p>Các bộ từ vựng mà bạn đã lưu lại trong quá trình luyện tập.</p>
+        </div>
+        <div class="vbadge">V</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="add-row">
+        <input type="text" id="wordInput" placeholder="Thêm từ hoặc cụm từ..." oninput="document.getElementById('saveBtn').classList.toggle('active', this.value.trim().length>0)">
+        <div class="select">
+          <select>
+            <option>Common</option>
+            <option>+ Topic mới...</option>
+          </select>
+        </div>
+        <button class="btn-save" id="saveBtn">Lưu</button>
+      </div>
+
+      <div class="empty">Bạn chưa lưu từ nào.</div>
+    </div>
+  </main>
+
+  <!-- Modal: Ôn tập từ vựng -->
+  <div class="overlay" id="m-review">
+    <div class="modal">
+      <button class="close" onclick="cls('m-review')">✕</button>
+      <h3>Ôn tập từ vựng</h3>
+      <p>0 / 0 từ đã chọn</p>
+      <div class="modal-acts">
+        <button class="btn-cancel" onclick="cls('m-review')">Huỷ</button>
+        <button class="btn-go">Bắt đầu ôn (0)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Gợi ý từ mới -->
+  <div class="overlay" id="m-suggest">
+    <div class="modal">
+      <button class="close" onclick="cls('m-suggest')">✕</button>
+      <h3>Gợi ý từ mới</h3>
+      <p>Không có gợi ý nào.</p>
+    </div>
+  </div>
+
+  <!-- Modal: Gộp topic -->
+  <div class="overlay" id="m-merge">
+    <div class="modal">
+      <button class="close" onclick="cls('m-merge')">✕</button>
+      <h3>Gộp topic</h3>
+      <p>Chọn ít nhất 2 topic và đặt tên cho topic mới.</p>
+      <div class="modal-acts">
+        <button class="btn-cancel" onclick="cls('m-merge')">Huỷ</button>
+        <button class="btn-go">Gộp (0)</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function cls(id){ document.getElementById(id).classList.remove('open'); }
+  // To open a modal for testing: document.getElementById('m-review').classList.add('open');
+</script>
+</body>
+</html>

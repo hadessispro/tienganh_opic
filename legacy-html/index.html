@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luyennoi.com | Tự Luyện IELTS Speaking Hiệu Quả</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#5012e6;          /* primary big button / headings */
+    --purple-soft:#f3eefe;     /* hero card bg */
+    --pink:#ec268f;            /* PART badges */
+    --teal:#16c5b0;            /* vocab / fix-error outline */
+    --cyan:#1ba7e6;            /* "Mua Xịn" outline */
+    --ink:#484d4f;             /* default text */
+    --muted:#7a8084;
+    --line:#e5e7eb;
+    --hover:#ededed;           /* active nav bg */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Lexend',system-ui,sans-serif;color:var(--ink);background:#fff;display:flex;min-height:100vh}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{width:230px;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 18px;flex-shrink:0}
+  .brand{display:flex;align-items:center;gap:9px;font-size:20px;font-weight:600;margin-bottom:34px}
+  .brand .logo{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7aa9ff,#2b5bd6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+  .nav{display:flex;flex-direction:column;gap:4px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:8px;font-size:14px;color:var(--ink);text-decoration:none;transition:.15s}
+  .nav a:hover{background:#f5f5f5}
+  .nav a.active{background:var(--hover)}
+  .nav .ico{width:18px;text-align:center;opacity:.8}
+  .sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:14px}
+  .btn-buy{border:1px solid var(--cyan);background:#fff;color:var(--ink);padding:11px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+  .logout{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink);cursor:pointer;padding-left:4px}
+
+  /* ---------- Main ---------- */
+  .main{flex:1;display:flex;justify-content:center;padding:40px 30px}
+  .content{width:100%;max-width:1050px}
+
+  /* Hero */
+  .hero{background:var(--purple-soft);border-radius:14px;padding:34px 40px}
+  .hero h1{color:var(--purple);font-size:26px;font-weight:700;margin-bottom:12px}
+  .hero p{font-size:14.5px;color:#6b6f72;max-width:760px;line-height:1.5}
+  .hero-actions{margin-top:26px}
+  .btn-primary{background:var(--purple);color:#fff;border:none;border-radius:9px;padding:18px 34px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:9px;box-shadow:0 6px 16px rgba(80,18,230,.28)}
+  .pill-row{display:flex;align-items:center;gap:12px;margin-top:16px}
+  .btn-outline{background:#fff;color:var(--purple);border:1.5px solid var(--purple);border-radius:9px;padding:13px 24px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}
+  .divider-v{width:1px;height:34px;background:#cdbef5}
+  .hero-link{display:block;text-align:right;margin-top:18px;font-size:13px;color:#6b6f72;text-decoration:underline;cursor:pointer}
+
+  /* Section title */
+  .section-title{display:flex;align-items:center;gap:16px;color:var(--muted);font-size:15px;margin:38px 0 18px}
+  .section-title::before,.section-title::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* Practice card */
+  .card{border:1px solid var(--line);border-radius:14px;display:grid;grid-template-columns:1.1fr 1.3fr .8fr;gap:0}
+  .card>div{padding:26px 28px}
+  .card>div:not(:last-child){border-right:1px solid var(--line)}
+  .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .card-head .t{display:flex;align-items:center;gap:9px;font-weight:600;font-size:16px}
+  .card-head .hist{font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer}
+  .card p.desc{font-size:13.5px;color:#6b6f72;line-height:1.5;margin-bottom:16px}
+  .badges{display:flex;gap:9px}
+  .badge{border:1.5px solid var(--pink);color:var(--pink);background:#fff;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer}
+
+  /* Heatmap */
+  .heatmap{display:flex;flex-direction:column;gap:6px}
+  .months{display:flex;gap:32px;font-size:11.5px;color:var(--muted);padding-left:30px;margin-bottom:2px}
+  .hm-row{display:flex;align-items:center;gap:6px}
+  .hm-row .day{width:26px;font-size:11px;color:var(--muted)}
+  .hm-cells{display:flex;gap:3px}
+  .cell{width:9px;height:9px;border-radius:2px;background:#ebedef}
+  .legend{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:8px;padding-left:30px}
+  .legend .scale{display:flex;align-items:center;gap:3px}
+  .dot{width:9px;height:9px;border-radius:50%}
+
+  /* Streak */
+  .streak{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+  .streak .num{display:flex;align-items:center;gap:6px;font-size:30px;font-weight:700}
+  .streak .flame{font-size:22px}
+  .streak .lbl{font-size:13px;color:var(--muted)}
+
+  /* Footer actions */
+  .footer-actions{display:flex;justify-content:space-between;margin-top:24px}
+  .fbtn{border:1px solid var(--teal);background:#fff;color:var(--ink);border-radius:10px;padding:13px 20px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:9px}
+  .fbtn .ic{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--teal);color:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+  .footer-right{display:flex;gap:14px}
+  .foot-links{text-align:center;margin-top:24px;font-size:13px;color:var(--muted)}
+  .foot-links a{color:var(--muted);text-decoration:underline;margin:0 4px}
+</style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">S</span> Luyện Nói <span style="font-size:15px">⚽</span></div>
+    <nav class="nav">
+      <a href="#" class="active"><span class="ico">⌂</span> Trang chủ</a>
+      <a href="#"><span class="ico">▤</span> Thi thử</a>
+      <a href="#"><span class="ico">⛗</span> Luyện Forecast</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="btn-buy">Mua Xịn</button>
+      <div class="logout"><span>↪</span> Đăng xuất</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="content">
+      <!-- Hero -->
+      <section class="hero">
+        <h1>Chưa biết Speaking đang band mấy? Thi thử là biết ngay!</h1>
+        <p>Thi thử hàng ngày giúp rèn phản xạ, nhận điểm chuẩn, biết mình đang yếu ở đâu rồi luyện tập để cải thiện nè :}</p>
+        <div class="hero-actions">
+          <button class="btn-primary">🎤 2 phút kiểm tra nhanh Part 1</button>
+          <div class="pill-row">
+            <button class="btn-outline">Part 2</button>
+            <button class="btn-outline">Part 3</button>
+            <span class="divider-v"></span>
+            <button class="btn-outline">Full Test</button>
+          </div>
+        </div>
+        <span class="hero-link">Điểm web chấm chuẩn này :} ↗</span>
+      </section>
+
+      <!-- Section title -->
+      <div class="section-title">Luyện tập</div>
+
+      <!-- Practice card -->
+      <section class="card">
+        <div>
+          <div class="card-head">
+            <span class="t">⛗ Luyện theo Forecast</span>
+            <span class="hist">↺ Lịch sử</span>
+          </div>
+          <p class="desc">Nhận sửa lỗi và đánh giá band ngay sau mỗi câu.</p>
+          <div class="badges">
+            <button class="badge">PART 1 ›</button>
+            <button class="badge">PART 2 ›</button>
+            <button class="badge">PART 3 ›</button>
+          </div>
+        </div>
+
+        <div class="heatmap">
+          <div class="months"><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div>
+          <div class="hm-row"><span class="day">Tue</span><div class="hm-cells" id="rowTue"></div></div>
+          <div class="hm-row"><span class="day">Thu</span><div class="hm-cells" id="rowThu"></div></div>
+          <div class="hm-row"><span class="day">Sat</span><div class="hm-cells" id="rowSat"></div></div>
+          <div class="legend">
+            <span>Đông <span class="dot" style="background:#1ba7e6"></span> x 0</span>
+            <span class="scale">Ít
+              <span class="dot" style="background:#d7f5e6"></span>
+              <span class="dot" style="background:#9fe6bf"></span>
+              <span class="dot" style="background:#46cf7a"></span>
+              <span class="dot" style="background:#19a14f"></span>
+              <span class="dot" style="background:#5012e6"></span>
+              Nhiều</span>
+          </div>
+        </div>
+
+        <div class="streak">
+          <span class="num"><span class="flame">🔥</span> 0</span>
+          <span class="lbl">Day streak</span>
+        </div>
+      </section>
+
+      <!-- Footer actions -->
+      <div class="footer-actions">
+        <button class="fbtn">🗨 Dành cho giáo viên</button>
+        <div class="footer-right">
+          <button class="fbtn"><span class="ic">V</span> Sổ từ vựng</button>
+          <button class="fbtn">🔧 Học sửa lỗi</button>
+        </div>
+      </div>
+
+      <div class="foot-links"><a href="#">Hỗ trợ</a> <a href="#">Join us</a></div>
+    </div>
+  </main>
+
+<script>
+  // Build empty heatmap cells (≈19 weeks per row)
+  ['rowTue','rowThu','rowSat'].forEach(id=>{
+    const row=document.getElementById(id);
+    for(let i=0;i<19;i++){const c=document.createElement('span');c.className='cell';row.appendChild(c);}
+  });
+</script>
+</body>
+</html>

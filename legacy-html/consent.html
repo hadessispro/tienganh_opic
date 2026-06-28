@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Điều khoản & dữ liệu cá nhân</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5012e6;
+        --ink: #3a3f41;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 24px;
+      }
+
+      .setting {
+        max-width: 600px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .setting .txt h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .setting .txt p {
+        font-size: 14px;
+        color: #6b6f72;
+        line-height: 1.5;
+      }
+
+      /* Toggle */
+      .switch {
+        width: 46px;
+        height: 25px;
+        border-radius: 999px;
+        background: var(--purple);
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: 0.2s;
+      }
+      .switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 21px;
+        height: 21px;
+        border-radius: 50%;
+        background: #fff;
+        transition: 0.2s;
+      }
+      .switch.off {
+        background: #cbd0d4;
+      }
+      .switch.off::after {
+        right: 23px;
+      }
+
+      .expander {
+        max-width: 600px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 13px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        cursor: pointer;
+        margin-bottom: 16px;
+      }
+      .expander .chev {
+        color: var(--muted);
+      }
+      .disclaimer {
+        max-width: 600px;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 30px;
+      }
+
+      .actions {
+        max-width: 600px;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+      }
+      .btn-home {
+        border: 1px solid #1f2433;
+        background: #fff;
+        color: #1f2433;
+        border-radius: 999px;
+        padding: 13px 28px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-confirm {
+        background: #e5e7eb;
+        color: #9aa0a4;
+        border: none;
+        border-radius: 999px;
+        padding: 13px 32px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: not-allowed;
+        transition: 0.15s;
+      }
+      .btn-confirm.active {
+        background: var(--purple);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(80, 18, 230, 0.28);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 14px">⚽</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <h1>Điều khoản sử dụng và dữ liệu cá nhân</h1>
+
+      <div class="setting">
+        <div class="txt">
+          <h3>Thu thập và lưu trữ dữ liệu giọng nói</h3>
+          <p>
+            Cho phép lưu trữ, xử lý dữ liệu giọng nói để sử dụng dịch vụ. Nếu
+            rút lại, bạn sẽ không thể sử dụng tính năng ghi âm.
+          </p>
+        </div>
+        <div class="switch" onclick="toggle(this)"></div>
+      </div>
+
+      <div class="setting">
+        <div class="txt">
+          <h3>Huấn luyện hệ thống AI</h3>
+          <p>
+            Cho phép sử dụng dữ liệu giọng nói (đã được phi danh tính hóa) của
+            mình để cải thiện độ chính xác điểm và huấn luyện hệ thống AI. Đây
+            là tùy chọn và không ảnh hưởng đến việc sử dụng dịch vụ.
+          </p>
+        </div>
+        <div class="switch" onclick="toggle(this)"></div>
+      </div>
+
+      <div class="expander">
+        <span>Xem điều khoản đầy đủ</span>
+        <span class="chev">›</span>
+      </div>
+
+      <p class="disclaimer">
+        Việc rút lại sự đồng ý không ảnh hưởng đến tính hợp pháp của việc xử lý
+        dữ liệu trước đó.
+      </p>
+
+      <div class="actions">
+        <button class="btn-home">Về trang chủ</button>
+        <button class="btn-confirm" id="confirmBtn">Xác nhận</button>
+      </div>
+    </div>
+
+    <script>
+      function toggle(el) {
+        el.classList.toggle("off");
+        sync();
+      }
+      // Enable "Xác nhận" once the required (first) consent is ON.
+      function sync() {
+        const required = !document
+          .querySelectorAll(".switch")[0]
+          .classList.contains("off");
+        document
+          .getElementById("confirmBtn")
+          .classList.toggle("active", required);
+      }
+      sync(); // both toggles start ON
+    </script>
+  </body>
+</html>

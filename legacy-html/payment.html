@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Nâng cấp Xịn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5012e6;
+        --teal: #16c5b0;
+        --ink: #484d4f;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      /* Top bar */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 30px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .logout {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 40px 30px 70px;
+      }
+
+      /* Benefits card */
+      .benefits {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 30px 36px;
+        max-width: 720px;
+        margin: 0 auto 50px;
+      }
+      .benefits h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .benefits .email {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+      .benefits ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .benefits li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14.5px;
+        color: #5a5f61;
+      }
+      .check {
+        color: var(--teal);
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      /* Pricing intro */
+      .intro {
+        text-align: center;
+        margin-bottom: 34px;
+      }
+      .intro h2 {
+        font-size: 20px;
+        font-weight: 500;
+        color: #3a3f41;
+        margin-bottom: 8px;
+      }
+      .intro p {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* Pricing cards */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 26px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px 28px 30px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+      }
+      .card.featured {
+        border: 2px solid var(--purple);
+        box-shadow: 0 8px 26px rgba(80, 18, 230, 0.1);
+      }
+      .card .tag {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--purple);
+        margin-bottom: 14px;
+      }
+      .card .tag span {
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .card .price {
+        font-size: 34px;
+        font-weight: 700;
+        color: #2b2f31;
+        margin-bottom: 18px;
+      }
+      .card .price small {
+        font-size: 16px;
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .card .note {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin-bottom: 22px;
+      }
+      .btn {
+        width: 100%;
+        border-radius: 999px;
+        padding: 13px;
+        font-family: inherit;
+        font-size: 14.5px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-outline {
+        background: #fff;
+        border: 1.5px solid var(--purple);
+        color: var(--purple);
+      }
+      .btn-solid {
+        background: var(--purple);
+        border: 1.5px solid var(--purple);
+        color: #fff;
+        box-shadow: 0 6px 16px rgba(80, 18, 230, 0.25);
+      }
+
+      /* Footer links */
+      .foot {
+        text-align: center;
+        margin-top: 50px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .foot a {
+        font-size: 14px;
+        color: var(--ink);
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 15px">⚽</span>
+      </div>
+      <div class="logout"><span>↪</span> Đăng xuất</div>
+    </header>
+
+    <div class="wrap">
+      <!-- Benefits -->
+      <section class="benefits">
+        <h1>Xịn được gì?</h1>
+        <div class="email">(your-email@example.com)</div>
+        <ul>
+          <li><span class="check">✔</span> Nói mỏi mồm luôn :}</li>
+          <li><span class="check">✔</span> Sửa phát âm, ngữ pháp chi tiết.</li>
+          <li><span class="check">✔</span> Được Thi thử không giới hạn.</li>
+        </ul>
+      </section>
+
+      <!-- Intro -->
+      <div class="intro">
+        <h2>Chọn một gói, quét mã QR và <b>GIỮ NGUYÊN</b> nội dung (LN***)</h2>
+        <p>
+          Sau thanh toán thành công kèm mã thanh toán, web sẽ tự động tải lại
+          sau vài giây và nâng cấp Xịn.
+        </p>
+      </div>
+
+      <!-- Pricing -->
+      <div class="cards">
+        <div class="card">
+          <div class="tag">1 TUẦN <span>(50.000 VNĐ)</span></div>
+          <div class="price">50k<small>/tuần</small></div>
+          <div class="note">Ôn thi cấp tốc :}</div>
+          <button class="btn btn-outline">Thanh toán</button>
+        </div>
+
+        <div class="card featured">
+          <div class="tag">1 THÁNG <span>(90.000 VNĐ)</span></div>
+          <div class="price">90k<small>/tháng</small></div>
+          <div class="note">Thử xem LuyenNoi có gì :}</div>
+          <button class="btn btn-solid">Thanh toán</button>
+        </div>
+
+        <div class="card">
+          <div class="tag">3 THÁNG <span>(255.000 VNĐ)</span></div>
+          <div class="price">85k<small>/tháng</small></div>
+          <div class="note">Ôn speaking thôi, chứ không trượt aim á :}</div>
+          <button class="btn btn-outline">Thanh toán</button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="foot">
+        <a
+          >Điện thoại lên Xịn rồi mà máy tính thì chưa → kiểm tra lại giờ/múi
+          giờ đúng GMT+7 Hanoi chưa nhé</a
+        >
+        <a
+          >Chuyển tiền rồi mà tải lại vẫn chưa được kích hoạt Xịn → nhắn tớ
+          nhé</a
+        >
+      </div>
+    </div>
+  </body>
+</html>

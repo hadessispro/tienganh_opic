@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Giáo viên quản lý lớp</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5012e6;
+        --purple-dark: #3d0fb0;
+        --cyan: #1ba7e6;
+        --ink: #2b2f31;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        padding: 22px 18px;
+        flex-shrink: 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 34px;
+      }
+      .brand .logo {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .nav a:hover {
+        background: #f5f5f5;
+      }
+      .nav .ico {
+        width: 18px;
+        text-align: center;
+        opacity: 0.8;
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+      }
+      .counter {
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        border: 6px solid #e3e1ec;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .counter b {
+        font-size: 24px;
+        color: var(--purple);
+        line-height: 1;
+      }
+      .counter small {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .btn-buy {
+        width: 100%;
+        border: 1px solid var(--cyan);
+        background: #fff;
+        color: var(--ink);
+        padding: 11px;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .account {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        align-self: flex-start;
+      }
+
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        text-align: center;
+      }
+      .main h1 {
+        font-size: 46px;
+        font-weight: 800;
+        line-height: 1.15;
+        max-width: 620px;
+        margin-bottom: 30px;
+      }
+      .main .sub {
+        font-size: 15px;
+        color: var(--muted);
+        margin-bottom: 18px;
+      }
+      .btn-create {
+        background: var(--purple-dark);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 30px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 20px rgba(80, 18, 230, 0.3);
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 18, 40, 0.42);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 60;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        width: 400px;
+        max-width: 92vw;
+        background: #fff;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 22px 55px rgba(0, 0, 0, 0.22);
+        position: relative;
+        text-align: left;
+      }
+      .modal label {
+        font-size: 14px;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 8px;
+      }
+      .modal input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 11px 14px;
+        font-family: inherit;
+        font-size: 14px;
+        margin-bottom: 18px;
+      }
+      .modal .close {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        border: none;
+        background: none;
+        font-size: 18px;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .modal-acts {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .btn-done {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 26px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 15px">⚽</span>
+      </div>
+      <nav class="nav">
+        <a href="#"><span class="ico">⌂</span> Trang chủ</a>
+        <a href="#"><span class="ico">▤</span> Thi thử</a>
+        <a href="#"><span class="ico">⛗</span> Luyện Forecast</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="counter"><b>0</b><small>/25</small></div>
+        <button class="btn-buy">Mua Xịn</button>
+        <div class="account"><span>◍</span> Tài khoản ▾</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <h1>Quản lý lớp học nhẹ nhàng hơn với Luyennoi giáo viên</h1>
+      <p class="sub">Thêm một lớp học để bắt đầu</p>
+      <button
+        class="btn-create"
+        onclick="document.getElementById('m-class').classList.add('open')"
+      >
+        Tạo lớp <span>+</span>
+      </button>
+    </main>
+
+    <!-- Tạo lớp modal -->
+    <div class="overlay" id="m-class">
+      <div class="modal">
+        <button
+          class="close"
+          onclick="document.getElementById('m-class').classList.remove('open')"
+        >
+          ✕
+        </button>
+        <label>Lớp:</label>
+        <input type="text" placeholder="Tên lớp..." />
+        <div class="modal-acts">
+          <button
+            class="btn-done"
+            onclick="
+              document.getElementById('m-class').classList.remove('open')
+            "
+          >
+            Xong
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

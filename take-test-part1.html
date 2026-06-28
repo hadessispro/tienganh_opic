@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Thi thử Part 1</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #5012e6;
+        --primary-dark: #3d0fb0;
+        --pink: #ec268f;
+        --info: #1ba7e6;
+        --success: #16a34a;
+        --ink: #3a3f41;
+        --muted: #7a8084;
+        --line: #e5e7eb;
+        --base200: #f5f6f8;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        min-height: 100vh;
+      }
+
+      /* Top bar */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .logout {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 14px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .stage {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 61px);
+        padding: 24px;
+      }
+
+      /* ---- Card shared ---- */
+      .card {
+        width: 904px;
+        max-width: 100%;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ---- Start screen ---- */
+      .start {
+        padding: 40px 48px;
+        min-height: 480px;
+        display: flex;
+        flex-direction: column;
+      }
+      .start-top {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 8px;
+      }
+      .start-top h3 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .start-top .exit {
+        position: absolute;
+        right: 0;
+        border: 1px solid #9ca3af;
+        color: #6b7280;
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .hr {
+        height: 1px;
+        background: var(--line);
+        margin: 18px 0;
+      }
+      .start-body {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+        padding: 10px 0;
+      }
+      .feature {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .feature .row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        font-size: 15px;
+        color: #4a4f51;
+        line-height: 1.4;
+      }
+      .feature .ck {
+        color: var(--success);
+        font-weight: 700;
+      }
+      .info-panel h4 {
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .info-panel p {
+        font-size: 13.5px;
+        color: #6b6f72;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+      .switch-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13.5px;
+        color: #4a4f51;
+      }
+      .switch {
+        width: 42px;
+        height: 23px;
+        border-radius: 999px;
+        background: var(--primary);
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 19px;
+        height: 19px;
+        border-radius: 50%;
+        background: #fff;
+        transition: 0.2s;
+      }
+      .switch.off {
+        background: #cbd0d4;
+      }
+      .switch.off::after {
+        right: 21px;
+      }
+      .start-foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+      }
+      .btn-exit {
+        border: 1px solid #9ca3af;
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 12px 30px;
+        font-family: inherit;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .btn-start {
+        background: var(--primary-dark);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 34px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(80, 18, 230, 0.3);
+      }
+
+      /* ---- Recording screen ---- */
+      .rec {
+        padding: 0;
+        min-height: 480px;
+        display: flex;
+        flex-direction: column;
+      }
+      .rec-top {
+        padding: 28px 40px 0;
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        border-radius: 999px;
+        padding: 3px 11px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .rec-top h3 {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .rec-top .exit {
+        margin-left: auto;
+        border: 1px solid #9ca3af;
+        color: #6b7280;
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .rec-mid {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+      }
+      .rec-hint {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .rec-hint .p {
+        color: var(--primary);
+      }
+      .btn-replay {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: #9ca3af;
+        border-radius: 8px;
+        padding: 7px 18px;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: not-allowed;
+      }
+      .rec-bottom {
+        border-top: 1px solid var(--line);
+        padding: 18px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .recording {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--info);
+        font-size: 14px;
+      }
+      .pulse {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--info);
+        animation: pulse 1.2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .bars {
+        display: flex;
+        gap: 3px;
+        align-items: flex-end;
+        height: 26px;
+      }
+      .bars span {
+        width: 4px;
+        background: var(--info);
+        border-radius: 2px;
+        animation: bar 0.9s ease-in-out infinite;
+      }
+      .bars span:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .bars span:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .bars span:nth-child(4) {
+        animation-delay: 0.45s;
+      }
+      @keyframes bar {
+        0%,
+        100% {
+          height: 8px;
+        }
+        50% {
+          height: 26px;
+        }
+      }
+      .btn-submit {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 22px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* ---- Consent modal ---- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 18, 40, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 60;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        width: 420px;
+        max-width: 92vw;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+      }
+      .modal-h {
+        border-bottom: 1px solid var(--line);
+        padding: 16px 20px;
+      }
+      .modal-h h3 {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+      .modal-b {
+        padding: 18px 20px;
+      }
+      .modal-b .lead {
+        text-align: center;
+        font-size: 15px;
+        margin-bottom: 16px;
+      }
+      .pts {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .pts li {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 13.5px;
+        line-height: 1.4;
+        color: #4a4f51;
+      }
+      .pts .pi {
+        color: var(--primary);
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .safe {
+        margin-top: 16px;
+        background: rgba(22, 163, 74, 0.1);
+        border-radius: 6px;
+        padding: 11px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .safe div {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 12px;
+        color: var(--success);
+      }
+      .more {
+        margin-top: 16px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #4b5563;
+        background: #fff;
+        cursor: pointer;
+      }
+      .modal-f {
+        border-top: 1px solid var(--line);
+        background: var(--base200);
+        padding: 16px 20px;
+      }
+      .modal-f .sel {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .chk {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        cursor: pointer;
+      }
+      .chk input {
+        margin-top: 2px;
+        accent-color: var(--primary);
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+      }
+      .chk span {
+        font-size: 12px;
+        line-height: 1.4;
+        color: #4a4f51;
+      }
+      .modal-acts {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .btn-deny {
+        border: 1px solid #9ca3af;
+        background: #fff;
+        color: #4b5563;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .btn-agree {
+        flex: 1;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 11px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-agree:disabled {
+        background: #c4b6f0;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 14px">⚽</span>
+      </div>
+      <div class="logout"><span>↪</span> Đăng xuất</div>
+    </header>
+
+    <div class="stage">
+      <!-- ===== Start screen ===== -->
+      <div class="card" id="startCard">
+        <div class="start">
+          <div class="start-top">
+            <h3>PART 1</h3>
+            <button class="exit">Thoát</button>
+          </div>
+          <div class="hr"></div>
+
+          <div class="start-body">
+            <div class="feature">
+              <div class="row">
+                <span class="ck">✔</span> Làm quen với cấu trúc bài thi thật.
+              </div>
+              <div class="row">
+                <span class="ck">✔</span> Nhận đánh giá điểm số chi tiết.
+              </div>
+            </div>
+            <div class="info-panel">
+              <h4>Chuẩn phòng thi</h4>
+              <p>
+                Có giới hạn thời gian mỗi câu. Hết giờ là ngắt lời để sang câu
+                sau. Chỉ ghi âm 1 lần mỗi câu.
+              </p>
+              <div class="switch-row">
+                <span>Hiện câu hỏi (questions)</span>
+                <div
+                  class="switch"
+                  id="qSwitch"
+                  onclick="this.classList.toggle('off')"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="start-foot">
+            <button class="btn-exit">Thoát</button>
+            <button class="btn-start" onclick="openConsent()">Bắt Đầu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Recording screen (hidden) ===== -->
+      <div class="card" id="recCard" style="display: none">
+        <div class="rec">
+          <div class="rec-top">
+            <span class="badge">⏱ Căng</span>
+            <h3>PART 1</h3>
+            <button class="exit" onclick="reset()">Thoát</button>
+          </div>
+          <div class="hr" style="margin: 18px 40px 0"></div>
+
+          <div class="rec-mid">
+            <p class="rec-hint">
+              *Trả lời câu hỏi, sau đó nhấn
+              <span class="p">Ghi nhận câu trả lời</span> để sang câu tiếp theo.
+            </p>
+            <button class="btn-replay" disabled>Nghe lại</button>
+          </div>
+
+          <div class="rec-bottom">
+            <span class="recording"
+              ><span class="pulse"></span> Đang ghi âm...</span
+            >
+            <div class="bars">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <button class="btn-submit">Ghi nhận câu trả lời</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Consent modal ===== -->
+    <div class="overlay" id="consent">
+      <div class="modal">
+        <div class="modal-h"><h3>ĐIỀU KHOẢN SỬ DỤNG DỊCH VỤ</h3></div>
+        <div class="modal-b">
+          <p class="lead">2 điểm cần nắm:</p>
+          <ul class="pts">
+            <li>
+              <span class="pi">🎤</span> Hệ thống cần lưu và xử lý bản ghi âm
+              giọng nói của bạn để chấm điểm.
+            </li>
+            <li>
+              <span class="pi">✦</span> Cho phép chúng tôi sử dụng dữ liệu giúp
+              bạn nhận điểm chính xác hơn.
+            </li>
+          </ul>
+          <div class="safe">
+            <div>🛡 Dữ liệu được bảo vệ và không bao giờ được bán.</div>
+            <div>↺ Bạn có thể rút lại sự đồng ý trong phần Cài đặt.</div>
+          </div>
+          <button class="more">Xem điều khoản đầy đủ <span>›</span></button>
+        </div>
+        <div class="modal-f">
+          <p class="sel">Vui lòng chọn:</p>
+          <label class="chk"
+            ><input type="checkbox" class="cb" onchange="syncAgree()" /><span
+              >Tôi đồng ý cho phép lưu trữ, xử lý dữ liệu giọng nói để sử dụng
+              dịch vụ</span
+            ></label
+          >
+          <label class="chk"
+            ><input type="checkbox" class="cb" onchange="syncAgree()" /><span
+              >Tôi đồng ý cho phép sử dụng dữ liệu giọng nói (đã được phi danh
+              tính hóa) của mình để cải thiện độ chính xác điểm và huấn luyện hệ
+              thống AI</span
+            ></label
+          >
+          <div class="modal-acts">
+            <button class="btn-deny" onclick="closeConsent()">Từ chối</button>
+            <button class="btn-agree" id="agreeBtn" disabled onclick="agree()">
+              Đồng ý
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      function openConsent() {
+        $("#consent").classList.add("open");
+      }
+      function closeConsent() {
+        $("#consent").classList.remove("open");
+      }
+      function syncAgree() {
+        const all = [...document.querySelectorAll(".cb")].every(
+          (c) => c.checked,
+        );
+        $("#agreeBtn").disabled = !all;
+      }
+      function agree() {
+        closeConsent();
+        $("#startCard").style.display = "none";
+        $("#recCard").style.display = "flex";
+      }
+      function reset() {
+        $("#recCard").style.display = "none";
+        $("#startCard").style.display = "flex";
+        document.querySelectorAll(".cb").forEach((c) => (c.checked = false));
+        syncAgree();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói: Chọn giọng đọc</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --teal: #16c5b0;
+        --red: #e2342f;
+        --ink: #3a3f41;
+        --muted: #9aa0a4;
+        --line: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Lexend", system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        font-weight: 600;
+      }
+      .brand .logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #7aa9ff, #2b5bd6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .wrap {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 30px 24px 70px;
+      }
+      h1 {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 30px;
+      }
+      .accent {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 400;
+        margin: 24px 0 8px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead th {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+        text-align: left;
+        padding: 10px 8px;
+      }
+      thead th.center {
+        text-align: center;
+      }
+      tbody td {
+        padding: 14px 8px;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+        vertical-align: middle;
+      }
+      tbody td.num {
+        color: #6b7280;
+        width: 36px;
+      }
+      tbody td.gender {
+        color: #5a5f61;
+        width: 90px;
+      }
+      td.center {
+        text-align: center;
+      }
+      .play {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid var(--teal);
+        color: var(--teal);
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--red);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span> Luyện Nói
+        <span style="font-size: 14px">⚽</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <h1>Chọn giọng đọc bạn muốn</h1>
+      <div id="lists"></div>
+    </div>
+
+    <script>
+      const american = [
+        ["Heart", "Nữ"],
+        ["Bella", "Nữ"],
+        ["Nicole", "Nữ"],
+        ["Sarah", "Nữ"],
+        ["Sky", "Nữ"],
+        ["Aoede", "Nữ"],
+        ["Alloy", "Nữ"],
+        ["Jessica", "Nữ"],
+        ["Kore", "Nữ"],
+        ["Nova", "Nữ"],
+        ["River", "Nữ"],
+        ["Adam", "Nam"],
+        ["Echo", "Nam"],
+        ["Eric", "Nam"],
+        ["Fenrir", "Nam"],
+        ["Liam", "Nam"],
+        ["Michael", "Nam"],
+        ["Onyx", "Nam"],
+        ["Puck", "Nam"],
+        ["Santa", "Nam"],
+      ];
+      const british = [
+        ["Emma", "Nữ"],
+        ["Alice", "Nữ"],
+        ["Isabella", "Nữ"],
+        ["Lily", "Nữ"],
+        ["George", "Nam"],
+        ["Daniel", "Nam"],
+        ["Fable", "Nam"],
+        ["Lewis", "Nam"],
+      ];
+
+      function buildTable(title, voices) {
+        let rows = voices
+          .map(
+            (v, i) => `
+      <tr>
+        <td class="num">${i + 1}</td>
+        <td>${v[0]}</td>
+        <td class="gender">${v[1]}</td>
+        <td class="center"><button class="play">▶</button></td>
+        <td class="center"><input type="radio" name="voice" value="${v[0]}" ${v[0] === "Heart" ? "checked" : ""}></td>
+      </tr>`,
+          )
+          .join("");
+        return `
+      <div class="accent">${title}</div>
+      <table>
+        <thead><tr>
+          <th></th><th>Tên</th><th>Giới tính</th>
+          <th class="center">Nghe thử</th><th class="center">Chọn</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+      }
+
+      document.getElementById("lists").innerHTML =
+        buildTable("Accent American", american) +
+        buildTable("Accent British", british);
+    </script>
+  </body>
+</html>
