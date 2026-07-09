@@ -1,21 +1,15 @@
+import AppBrand from "./AppBrand";
+
 const navItems = [
   { id: "home", label: "Trang chủ", path: "/", icon: "⌂" },
-  { id: "thithu", label: "Thi thử", path: "/thi-thu", icon: "▤" },
-  { id: "forecast", label: "Luyện Forecast", path: "/luyen-forecast", icon: "⛗" }
+  { id: "thithu", label: "Thi thử", path: "/thi-thu/part-1", icon: "▤" },
+  { id: "forecast", label: "Luyện OPIC", path: "/luyen-forecast", icon: "⛗" }
 ];
 
 export default function AppSidebar({ active = "forecast", onNavigate }) {
   return (
     <aside className="app-sidebar">
-      <button className="app-sidebar-brand" type="button" onClick={() => onNavigate("/")}>
-        <span className="app-sidebar-logo" aria-hidden="true">
-          S
-        </span>
-        <span>Luyện Nói</span>
-        <span className="app-sidebar-ball" aria-label="Quả bóng đá" role="img">
-          ⚽
-        </span>
-      </button>
+      <AppBrand className="app-sidebar-brand" onClick={() => onNavigate("/")} />
 
       <nav className="app-sidebar-nav" aria-label="Chính">
         {navItems.map((item) => {

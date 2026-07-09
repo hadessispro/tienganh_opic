@@ -13,11 +13,11 @@ export const pageDefinitions = [
   {
     id: "login",
     kind: "react",
-    title: "Luyện Nói: Đăng nhập",
+    title: "OPIC: Đăng nhập",
     path: "/utils/login",
     aliases: ["/login", "/dang-nhap", "/dang-ky", "/utils/register"],
     description:
-      "Đăng nhập hoặc đăng ký Luyện Nói để tự luyện IELTS Speaking, thi thử và nhận chấm điểm."
+      "Đăng nhập hoặc đăng ký OPIC để tự luyện IELTS Speaking, thi thử và nhận chấm điểm."
   },
   {
     id: "thithu",
@@ -30,7 +30,8 @@ export const pageDefinitions = [
   },
   {
     id: "takeTestPart1",
-    file: "take-test-part1.html",
+    kind: "react",
+    title: "OPIC: Thi thử",
     path: "/thi-thu/part-1",
     aliases: ["/take-test-part1", "/take-test-part1.html", "/thi-thu-part-1"],
     nav: "thithu",
@@ -40,52 +41,52 @@ export const pageDefinitions = [
   {
     id: "forecast",
     kind: "react",
-    title: "Luyện Nói: Luyện Forecast",
+    title: "OPIC: Luyện OPIC",
     path: "/luyen-forecast",
     aliases: ["/forecast", "/question-answer", "/question-answer.html", "/question-answer/"],
     nav: "forecast",
     description:
-      "Luyện từng câu theo Forecast, xem gợi ý trả lời và bắt đầu luyện câu hỏi."
+      "Luyện từng câu theo question bank OPIC, xem gợi ý trả lời và bắt đầu luyện câu hỏi."
   },
   {
     id: "forecastPart1",
     kind: "react",
-    title: "Luyện Nói: Forecast Part 1",
+    title: "OPIC: IL-IM Question Bank",
     path: "/question-answer/part1",
     aliases: ["/luyen-forecast/part-1", "/forecast/part-1"],
     nav: "forecast",
     description:
-      "Danh sách câu hỏi Forecast IELTS Speaking Part 1 theo từng topic để luyện từng câu."
+      "Danh sách câu hỏi OPIC IL-IM theo từng topic để luyện từng câu."
   },
   {
     id: "forecastPart2",
     kind: "react",
-    title: "Luyện Nói: Forecast Part 2",
+    title: "OPIC: IH-AL Question Bank",
     path: "/question-answer/part2",
     aliases: ["/luyen-forecast/part-2", "/forecast/part-2"],
     nav: "forecast",
     description:
-      "Danh sách cue card Forecast IELTS Speaking Part 2 theo chủ đề để luyện trả lời."
+      "Danh sách câu hỏi OPIC IH-AL theo chủ đề để luyện trả lời."
   },
   {
     id: "forecastPart3",
     kind: "react",
-    title: "Luyện Nói: Forecast Part 3",
+    title: "OPIC: Role-play Question Bank",
     path: "/question-answer/part3",
     aliases: ["/luyen-forecast/part-3", "/forecast/part-3"],
     nav: "forecast",
     description:
-      "Danh sách câu hỏi thảo luận IELTS Speaking Part 3 theo Forecast và chủ đề."
+      "Danh sách câu hỏi role-play OPIC từ bộ IL-IM và IH-AL."
   },
   {
     id: "forecastPractice",
     kind: "react",
-    title: "Luyện Nói: Tập từng câu Forecast",
+    title: "OPIC: Tập từng câu",
     path: "/luyen-forecast/practice",
     aliases: [],
     nav: "forecast",
     description:
-      "Màn luyện từng câu Forecast với ghi âm, điều khoản dữ liệu và gợi ý câu mẫu."
+      "Màn luyện từng câu OPIC với ghi âm, điều khoản dữ liệu và gợi ý câu mẫu."
   },
   {
     id: "vocab",
@@ -120,7 +121,7 @@ export const pageDefinitions = [
   {
     id: "exerciseEd",
     file: "exercise.html",
-    title: "Luyện Nói: Luyện đuôi -ed",
+    title: "OPIC: Luyện đuôi -ed",
     path: "/hoc-sua-loi/duoi-ed",
     aliases: ["/exercise", "/exercise.html", "/luyen-ngu-phap"],
     description:
@@ -129,7 +130,7 @@ export const pageDefinitions = [
   {
     id: "exercisePresentPerfect",
     file: "exercise.html",
-    title: "Luyện Nói: Hiện tại hoàn thành",
+    title: "OPIC: Hiện tại hoàn thành",
     path: "/hoc-sua-loi/hien-tai-hoan-thanh",
     aliases: ["/luyen-hien-tai-hoan-thanh"],
     description:
@@ -138,7 +139,7 @@ export const pageDefinitions = [
   {
     id: "exercisePresentContinuous",
     file: "exercise.html",
-    title: "Luyện Nói: Hiện tại tiếp diễn",
+    title: "OPIC: Hiện tại tiếp diễn",
     path: "/hoc-sua-loi/hien-tai-tiep-dien",
     aliases: ["/luyen-hien-tai-tiep-dien"],
     description:
@@ -147,7 +148,7 @@ export const pageDefinitions = [
   {
     id: "exerciseFuture",
     file: "exercise.html",
-    title: "Luyện Nói: Thì tương lai",
+    title: "OPIC: Thì tương lai",
     path: "/hoc-sua-loi/tuong-lai",
     aliases: ["/luyen-thi-tuong-lai"],
     description:
@@ -165,7 +166,7 @@ export const pageDefinitions = [
     file: "payment.html",
     path: "/nang-cap",
     aliases: ["/payment", "/payment.html", "/mua-xin", "/upgrade"],
-    description: "Chọn gói nâng cấp Xịn cho Luyện Nói và xem quyền lợi tài khoản."
+    description: "Chọn gói nâng cấp Xịn cho OPIC và xem quyền lợi tài khoản."
   },
   {
     id: "paymentDetail",

@@ -16,7 +16,7 @@ const pricing = [
     title: "Miễn phí",
     description: "Bắt đầu từ cơ bản",
     price: "0 VNĐ",
-    features: ["20 lượt chấm điểm", "Sửa lỗi và cải thiện câu trả lời", "Forecast cập nhật liên tục"]
+    features: ["20 lượt chấm điểm", "Sửa lỗi và cải thiện câu trả lời", "Question bank OPIC cập nhật"]
   },
   {
     title: "Gói Xịn",

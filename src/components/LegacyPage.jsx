@@ -3,10 +3,12 @@ import { useEffect, useMemo, useRef } from "react";
 const routeByExactText = new Map([
   ["Trang chủ", "/"],
   ["⌂ Trang chủ", "/"],
-  ["Thi thử", "/thi-thu"],
-  ["▤ Thi thử", "/thi-thu"],
-  ["Luyện Forecast", "/luyen-forecast"],
-  ["⛗ Luyện Forecast", "/luyen-forecast"],
+  ["Thi thử", "/thi-thu/part-1"],
+  ["▤ Thi thử", "/thi-thu/part-1"],
+  ["Luyện OPIC", "/luyen-forecast"],
+  ["Luyện OPIC", "/luyen-forecast"],
+  ["⛗ Luyện OPIC", "/luyen-forecast"],
+  ["⛗ Luyện OPIC", "/luyen-forecast"],
   ["Mua Xịn", "/nang-cap"],
   ["Dành cho giáo viên", "/giao-vien"],
   ["🗨 Dành cho giáo viên", "/giao-vien"],
@@ -34,7 +36,33 @@ function scopeLegacyStyles(styles) {
   return styles
     .replace(/:root\s*\{/g, ".legacy-page{")
     .replace(/body\s*\{/g, ".legacy-page{")
-    .replace(/\*\s*\{/g, ".legacy-page *{");
+    .replace(/\*\s*\{/g, ".legacy-page *{")
+    .replace(/#5012e6/gi, "#0f172a")
+    .replace(/#ec268f/gi, "#0f172a")
+    .replace(/#16c5b0/gi, "#0f172a")
+    .replace(/#1ba7e6/gi, "#0f172a")
+    .replace(/#f3eefe/gi, "#f1f5f9")
+    .replace(/rgba\(80,\s*18,\s*230,\s*(0\.\d+|\d+)\)/gi, "rgba(15,23,42,0.18)")
+    .concat(`
+.legacy-page .brand {
+  color: #001c46 !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  gap: 10px !important;
+  letter-spacing: 0.5px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.legacy-page .brand .logo {
+  display: none !important;
+}
+.legacy-page .fbtn {
+  color: #0f172a !important;
+}
+.legacy-page .divider-v {
+  background: #cbd5e1 !important;
+}
+`);
 }
 
 function lessonKeyFromPath(path) {
@@ -98,14 +126,15 @@ function routeFromElement(element, pageId) {
 
   if (routeByExactText.has(text)) return routeByExactText.get(text);
   if (text.includes("2 phút kiểm tra nhanh Part 1")) return "/thi-thu/part-1";
+  if (text.includes("Thi thử và nhận điểm ngay")) return "/thi-thu/part-1";
   if (text === "PART 1 ›") return "/question-answer/part1";
   if (text === "PART 2 ›") return "/question-answer/part2";
   if (text === "PART 3 ›") return "/question-answer/part3";
   if (text === "Luyện câu này") {
     return "/question-answer/PART%201~Do%20you%20like%20your%20work%20or%20studies%3F";
   }
-  if (text === "Part 2" || text === "Part 3" || text === "Full Test") return "/thi-thu";
-  if (text.includes("Thi thử Full Test")) return "/thi-thu";
+  if (text === "Part 2" || text === "Part 3" || text === "Full Test") return "/thi-thu/part-1";
+  if (text.includes("Thi thử Full Test")) return "/thi-thu/part-1";
   if (text.includes("Thanh toán") && tag === "button") return "/thanh-toan";
   if (text === "Thoát" && !element.getAttribute("onclick")) return "/thi-thu";
 
@@ -189,13 +218,27 @@ export default function LegacyPage({ page, path, onNavigate }) {
     };
   }, [page, path]);
 
+  const processedBody = useMemo(() => {
+    const logoHtml = `
+<div class="brand" style="display:flex !important;align-items:center !important;gap:10px !important;margin-bottom:34px !important;cursor:pointer !important;border:none !important;background:transparent !important;padding:0 !important;color:#001c46 !important;font-size:20px !important;font-weight:800 !important;letter-spacing:0.5px !important;">
+  <svg viewBox="0 0 200 200" width="28" height="28" style="flex-shrink:0;">
+    <path d="M 35,90 L 35,35 L 165,35 L 165,90" fill="none" stroke="#00a896" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"></path>
+    <path d="M 35,110 L 35,155 L 85,155 L 100,175 L 115,155 L 165,155 L 165,110" fill="none" stroke="#001c46" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"></path>
+    <path d="M 25,100 L 55,100 C 65,100 70,50 80,50 C 90,50 95,150 105,150 C 115,150 120,50 130,50 C 140,50 145,100 155,100 L 175,100" fill="none" stroke="#00a896" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+  <span style="font-family:'Inter',sans-serif;">LUYENOPIC</span>
+</div>
+    `;
+    return page.body.replace(/<div\s+class=["']brand["'][^>]*>[\s\S]*?<\/div>/gi, logoHtml);
+  }, [page.body]);
+
   return (
     <>
       <style>{scopedStyles}</style>
       <div
         ref={containerRef}
         className="legacy-page"
-        dangerouslySetInnerHTML={{ __html: page.body }}
+        dangerouslySetInnerHTML={{ __html: processedBody }}
       />
     </>
   );

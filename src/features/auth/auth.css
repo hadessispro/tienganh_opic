@@ -2,6 +2,7 @@
   --auth-primary: #570df8;
   --auth-primary-dark: #4b0fd3;
   --auth-primary-soft: rgba(87, 13, 248, 0.05);
+  --brand-orange: #f97316;
   --auth-success: #22c55e;
   --auth-neutral: #202733;
   --auth-text: #384252;
@@ -11,7 +12,7 @@
   min-height: 100vh;
   background: var(--auth-card);
   color: var(--auth-text);
-  font-family: "Lexend", system-ui, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .auth-page *,
@@ -35,28 +36,23 @@
 .auth-brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: var(--auth-neutral);
+  color: var(--brand-orange);
   text-decoration: none;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   white-space: nowrap;
 }
 
 .auth-brand-logo {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
+  display: none;
 }
 
 .auth-brand-logo-compact {
-  width: 44px;
-  height: 44px;
+  display: none;
 }
 
 .auth-brand-ball {
-  font-size: 18px;
-  line-height: 1;
+  display: none;
 }
 
 .auth-hero {

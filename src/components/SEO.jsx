@@ -71,7 +71,7 @@ export default function SEO({ definition, page }) {
       inLanguage: "vi-VN",
       isPartOf: {
         "@type": "WebSite",
-        name: "Luyện Nói",
+        name: "OPIC",
         url: SITE_ORIGIN
       }
     });

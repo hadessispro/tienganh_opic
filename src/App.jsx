@@ -7,6 +7,7 @@ import AuthLandingPage from "./features/auth/AuthLandingPage";
 import ForecastOverview from "./features/forecast/ForecastOverview";
 import ForecastPartPage from "./features/forecast/ForecastPartPage";
 import ForecastPracticePage from "./features/forecast/ForecastPracticePage";
+import MockTestPage from "./features/forecast/MockTestPage";
 import { getRouteDefinition, normalizePath } from "./lib/routes";
 
 export default function App() {
@@ -65,6 +66,9 @@ export default function App() {
     }
     if (route.definition.id === "forecastPractice") {
       return <ForecastPracticePage path={route.normalizedPath} onNavigate={navigate} />;
+    }
+    if (route.definition.id === "takeTestPart1") {
+      return <MockTestPage onNavigate={navigate} />;
     }
     return <ForecastOverview onNavigate={navigate} />;
   };

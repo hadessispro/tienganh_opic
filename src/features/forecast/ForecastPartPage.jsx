@@ -2,11 +2,12 @@ import { useMemo, useState } from "react";
 
 import ForecastLayout from "./ForecastLayout";
 import { PlayIcon, SearchIcon } from "./ForecastIcons";
-import { forecastParts, forecastTopics, questionPath } from "./forecastData";
+import { forecastPartLabel, forecastParts, forecastTopics, questionPath } from "./forecastData";
 
 export default function ForecastPartPage({ part = 1, onNavigate }) {
   const [query, setQuery] = useState("");
   const topics = forecastTopics[part] || forecastTopics[1];
+  const currentLabel = forecastPartLabel(part);
   const normalizedQuery = query.trim().toLowerCase();
   const visibleTopics = useMemo(() => {
     if (!normalizedQuery) return topics;
@@ -26,7 +27,7 @@ export default function ForecastPartPage({ part = 1, onNavigate }) {
     <ForecastLayout onNavigate={onNavigate}>
       <div className="forecast-list-page">
         <header className="forecast-toolbar">
-          <div className="forecast-tabs" role="tablist" aria-label="Chọn part">
+          <div className="forecast-tabs" role="tablist" aria-label="Chọn level OPIC">
             {forecastParts.map((item) => (
               <button
                 key={item.id}
@@ -54,7 +55,7 @@ export default function ForecastPartPage({ part = 1, onNavigate }) {
 
         <div className="forecast-topic-shell">
           <aside className="forecast-topic-nav">
-            <div>Chọn topic Part {part}</div>
+            <div>Chọn topic {currentLabel}</div>
             {topics.map((topic) => (
               <a key={topic.topic} href={`#${topic.topic.replace(/\W+/g, "")}`}>
                 {topic.topic}
@@ -94,9 +95,9 @@ export default function ForecastPartPage({ part = 1, onNavigate }) {
             {visibleTopics.length === 0 ? (
               <p className="forecast-empty">Không tìm thấy câu hỏi phù hợp.</p>
             ) : null}
-            <div className="forecast-end">Hết forecast</div>
+            <div className="forecast-end">Hết câu hỏi OPIC</div>
             <div className="forecast-old">
-              <h2>Câu forecast cũ đã làm (nhưng không nằm trong forecast hiện tại)</h2>
+              <h2>Câu đã làm nhưng chưa nằm trong bộ OPIC hiện tại</h2>
               <p>Không có câu nào.</p>
             </div>
           </section>

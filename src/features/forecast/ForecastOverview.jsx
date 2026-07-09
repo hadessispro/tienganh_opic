@@ -7,12 +7,12 @@ export default function ForecastOverview({ onNavigate }) {
     <ForecastLayout onNavigate={onNavigate}>
       <section className="forecast-hero">
         <div>
-          <h1>Luyện Forecast</h1>
-          <p>Luyện theo Part, chủ đề Forecast. Nhận điểm 4 tiêu chí và hướng cải thiện tức thì.</p>
+          <h1>Luyện OPIC</h1>
+          <p>Luyện theo level, topic và role-play từ bộ tài liệu OPIC. Nhận điểm 4 tiêu chí và hướng cải thiện tức thì.</p>
         </div>
-        <div className="forecast-progress" aria-label="Tiến độ luyện Forecast">
+        <div className="forecast-progress" aria-label="Tiến độ luyện OPIC">
           <div className="forecast-progress-head">
-            <strong>Cập nhật 18 ngày trước</strong>
+            <strong>Đã nạp question bank OPIC</strong>
             <span aria-hidden="true">i</span>
           </div>
           {forecastParts.map((part) => (
@@ -51,7 +51,7 @@ export default function ForecastOverview({ onNavigate }) {
         </div>
         <div>
           <strong>Thi thử để biết band Speaking của bạn</strong>
-          <p>Thi đủ 3 Part (~15 phút) để xem khả năng hiện tại của bạn.</p>
+          <p>Thi theo format OPIC để xem khả năng hiện tại của bạn.</p>
           <button type="button" onClick={() => onNavigate("/thi-thu")}>
             Thi thử Full Test
           </button>
