@@ -138,7 +138,15 @@ export default function MockTestPage({ onNavigate }) {
   }, [testCompleted]);
 
   const scoreMockTest = async () => {
-    const combined = transcriptsRef.current.filter(t => t.trim().length > 0).join("\n\n");
+    const details = testQuestions
+      .map((q, i) => ({
+        questionNumber: i + 1,
+        question: q,
+        answer: transcriptsRef.current[i] || ""
+      }))
+      .filter((d) => d.answer.trim().length > 0);
+
+    const combined = transcriptsRef.current.filter((t) => t.trim().length > 0).join("\n\n");
     if (!combined.trim()) {
       setScoreStatus("error");
       setScoreError("Bạn chưa ghi âm câu trả lời nào suốt bài thi. AI không thể đánh giá kết quả.");
@@ -159,7 +167,7 @@ export default function MockTestPage({ onNavigate }) {
           question: "OPIc Full Diagnostic Test (15 Questions)",
           topic: "OPIc full mock exam feedback report",
           level: "Diagnostic Test",
-          details: null
+          details: details
         })
       });
 

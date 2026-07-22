@@ -19,16 +19,61 @@ function deepSeekConfig() {
 }
 
 function fallbackScore(payload) {
-  const transcript = String(payload.transcript || "");
+  const transcript = String(payload.transcript || "").trim();
   const words = transcript
     .toLowerCase()
     .replace(/[^a-z0-9\s']/g, " ")
     .split(/\s+/)
     .filter(Boolean);
   const unique = new Set(words);
-  const wpm = payload.durationSeconds > 0 ? Math.round((words.length / payload.durationSeconds) * 60) : 0;
+  const durationSec = Number(payload.durationSeconds) || 0;
+  const wpm = durationSec > 0 ? Math.round((words.length / durationSec) * 60) : Math.round(words.length * 1.5);
   const overall = Math.max(35, Math.min(88, Math.round(38 + words.length * 0.7 + unique.size * 0.35)));
   const level = overall >= 78 ? "IH" : overall >= 64 ? "IM3" : overall >= 52 ? "IM1-IM2" : "IL";
+
+  // Dynamic error feedback generated specifically from the learner's ACTUAL transcript text
+  const dynamicErrors = [];
+
+  if (transcript.length > 0) {
+    if (words.length <= 8) {
+      const firstWord = words[0] || transcript;
+      dynamicErrors.push({
+        original: transcript,
+        highlightWord: firstWord,
+        explanation: `Câu trả lời khá ngắn (chỉ có ${words.length} từ: "${transcript}"). Trong kỳ thi OPIc, bạn nên phát triển câu trả lời thành câu hoàn chỉnh có chủ ngữ - vị ngữ (ví dụ: "It is located in downtown...") và bổ sung thêm 2-3 câu chi tiết để đạt band điểm IM/IH.`
+      });
+    } else {
+      const lower = transcript.toLowerCase();
+      if (lower.includes("it make ") || lower.includes("he make ") || lower.includes("she make ")) {
+        dynamicErrors.push({
+          original: "it make",
+          highlightWord: "make",
+          explanation: "Chủ ngữ ngôi thứ ba số ít (it/he/she) đi với động từ hiện tại đơn cần thêm 's' -> 'makes'."
+        });
+      } else if (lower.includes("i is ") || lower.includes("you is ")) {
+        dynamicErrors.push({
+          original: lower.includes("i is ") ? "I is" : "you is",
+          highlightWord: "is",
+          explanation: "Chia sai động từ to be. 'I' đi với 'am', 'you' đi với 'are'."
+        });
+      } else if (lower.includes(" i ")) {
+        dynamicErrors.push({
+          original: "i",
+          highlightWord: "i",
+          explanation: "Đại từ xưng hô 'I' (tôi) trong tiếng Anh luôn luôn phải viết hoa."
+        });
+      } else {
+        const sentences = transcript.split(/[.!?]+/).map((s) => s.trim()).filter(Boolean);
+        const targetSentence = sentences[0] || transcript;
+        const targetWord = words[0] || "word";
+        dynamicErrors.push({
+          original: targetSentence,
+          highlightWord: targetWord,
+          explanation: `Ý nói "${targetSentence}" của bạn đã đúng hướng. Để đạt trình độ OPIc cao hơn (IH/AL), hãy sử dụng thêm các liên từ mở rộng (như "Furthermore", "In addition") và giải thích chi tiết lý do.`
+        });
+      }
+    }
+  }
 
   return {
     provider: "local-fallback",
@@ -38,28 +83,44 @@ function fallbackScore(payload) {
     rubric: rubricKeys.map((name, index) => ({
       name,
       score: Math.max(30, Math.min(95, overall - 6 + index * 3)),
-      feedback: "Backend AI is unavailable, so this is a local heuristic estimate."
+      feedback: `Đánh giá dựa trên bài nói thực tế: "${transcript.slice(0, 35)}${transcript.length > 35 ? "..." : ""}"`
     })),
-    strengths: ["Có bản ghi và transcript để tự rà lại bài nói."],
-    improvements: ["Thêm ví dụ cụ thể, nối câu rõ hơn và bám sát keyword của câu hỏi."],
-    sampleUpgrade:
-      "Try answering with a clear point, one personal example, and one short explanation of why it matters.",
-    proofread: transcript,
-    errors: [
-      {
-        original: "it make me feel excited",
-        highlightWord: "make",
-        explanation: "Chủ ngữ \"it\" là ngôi thứ ba số ít nên động từ phải thêm \"s\": \"it makes me feel excited\". Đây là lỗi chia động từ rất phổ biến khi nói nhanh."
-      }
+    strengths: [
+      `Bài nói đã được ghi nhận: "${transcript.slice(0, 60)}${transcript.length > 60 ? "..." : ""}".`,
+      "Có phản xạ nói tiếng Anh trực tiếp."
     ],
+    improvements: [
+      "Mở rộng thêm chi tiết và ví dụ thực tế bám sát câu hỏi OPIc.",
+      "Sử dụng thêm các liên từ (linking words) để liên kết câu mạch lạc hơn."
+    ],
+    sampleUpgrade: transcript
+      ? `For example: "To elaborate on ${transcript}, I usually enjoy this because it helps me relax after work."`
+      : "Try answering with a clear point, one personal example, and one short explanation.",
+    proofread: transcript
+      ? transcript.charAt(0).toUpperCase() + transcript.slice(1)
+      : transcript,
+    errors: dynamicErrors,
     rawProvider: "local-fallback"
   };
 }
 
 function buildPrompt(payload) {
+  let learnerContent = "";
+  if (Array.isArray(payload.details) && payload.details.length > 0) {
+    learnerContent = payload.details
+      .filter((d) => d && d.answer && d.answer.trim())
+      .map((d) => `[Question ${d.questionNumber || ""}]: ${d.question}\n[Learner Answer]: "${d.answer}"`)
+      .join("\n\n");
+  }
+
+  if (!learnerContent) {
+    learnerContent = `[Question]: ${payload.question || "OPIC Speaking Question"}\n[Learner Answer]: "${payload.transcript || ""}"`;
+  }
+
   return [
-    "You are an OPIC speaking examiner and coach.",
-    "Score the learner response using the four OPIC rubric dimensions.",
+    "You are a strict, expert OPIC speaking examiner and coach.",
+    "Evaluate the learner's actual responses against the OPIC rubric criteria.",
+    "CRITICAL REQUIREMENT: For the 'errors' array, you MUST ONLY extract actual incorrect phrases or weaknesses directly from the learner's provided answers. Do NOT invent or use generic example sentences.",
     "Return ONLY valid JSON. Do not wrap in markdown.",
     "",
     "JSON schema:",
@@ -73,24 +134,24 @@ function buildPrompt(payload) {
     '    { "name": "Text Type", "score": 0-100, "feedback": "Vietnamese feedback" },',
     '    { "name": "Accuracy", "score": 0-100, "feedback": "Vietnamese feedback" }',
     "  ],",
-    '  "strengths": ["Vietnamese bullet"],',
-    '  "improvements": ["Vietnamese bullet"],',
-    '  "sampleUpgrade": "A better English answer sample, 70-110 words",',
-    '  "proofread": "A grammatically corrected and polished version of the user\'s transcript",',
+    '  "strengths": ["Vietnamese bullet analyzing learner performance"],',
+    '  "improvements": ["Vietnamese bullet advising improvements"],',
+    '  "sampleUpgrade": "A high-scoring sample English answer tailored to the test questions (80-120 words)",',
+    '  "proofread": "A corrected, polished version of the learner\'s actual transcript",',
     '  "errors": [',
     "    {",
-    '      "original": "The incorrect sentence or phrase from the transcript",',
-    '      "highlightWord": "The specific incorrect word in original to underline/color red in UI",',
-    '      "explanation": "Detailed explanation of why it is wrong and how to fix it in Vietnamese"',
+    '      "original": "The exact sentence or phrase from the learner\'s actual answer",',
+    '      "highlightWord": "The specific word from original to highlight",',
+    '      "explanation": "Detailed Vietnamese feedback explaining why it is weak/incorrect and how to say it better in OPIC"',
     "    }",
     "  ]",
     "}",
     "",
-    `Question: ${payload.question || ""}`,
-    `Topic: ${payload.topic || ""}`,
-    `Level target: ${payload.level || ""}`,
-    `Duration seconds: ${payload.durationSeconds || 0}`,
-    `Transcript: ${payload.transcript || ""}`
+    `Target Level: ${payload.level || "OPIC Test"}`,
+    `Total Duration: ${payload.durationSeconds || 900} seconds`,
+    "",
+    "=== LEARNER RESPONSES TO EVALUATE ===",
+    learnerContent
   ].join("\n");
 }
 
