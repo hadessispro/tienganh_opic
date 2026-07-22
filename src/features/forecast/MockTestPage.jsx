@@ -1233,7 +1233,7 @@ export default function MockTestPage({ onNavigate }) {
                 </div>
                 {/* Status banner under Eva */}
                 <div className="opic-eva-status-banner">
-                  {examState === "recording" ? "Đang ghi âm" : examState === "listening" ? "Đang phát câu hỏi" : examState === "thinking" ? "Chuẩn bị" : "Sẵn sàng"}
+                  {examState === "recording" ? "Đang ghi âm" : examState === "listening" ? "Đang phát câu hỏi" : examState === "thinking" ? "Chuẩn bị" : "Sẵn sàng (Bấm ▶ để nghe)"}
                 </div>
                 {examState === "recording" && (
                   <div className="opic-live-transcript-preview" style={{
@@ -1297,7 +1297,7 @@ export default function MockTestPage({ onNavigate }) {
 
                 {/* Large horizontal status banner */}
                 <div className="opic-status-banner-large">
-                  {examState === "recording" ? "ĐANG GHI ÂM" : examState === "listening" ? "ĐANG PHÁT CÂU HỎI" : examState === "thinking" ? "CHUẨN BỊ TRẢ LỜI" : "SẴN SÀNG"}
+                  {examState === "recording" ? "ĐANG GHI ÂM CÂU TRẢ LỜI" : examState === "listening" ? "ĐANG PHÁT CÂU HỎI" : examState === "thinking" ? "CHUẨN BỊ TRẢ LỜI" : "SẴN SÀNG - BẤM NÚT ▶ ĐỂ PHÁT CÂU HỎI"}
                 </div>
 
                 {/* Circular timer countdown */}
