@@ -61,7 +61,7 @@
   .card-head .t{display:flex;align-items:center;gap:9px;font-weight:600;font-size:16px}
   .card-head .hist{font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer}
   .card p.desc{font-size:13.5px;color:#6b6f72;line-height:1.5;margin-bottom:16px}
-  .badges{display:flex;gap:9px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px}
   .badge{border:1.5px solid var(--pink);color:var(--pink);background:#fff;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer}
 
   /* Heatmap */
@@ -110,13 +110,14 @@
     <div class="content">
       <!-- Hero -->
       <section class="hero">
-        <h1>Chưa biết Speaking đang band mấy? Thi thử là biết ngay!</h1>
+        <h1>Chưa biết Speaking đang ở level mấy? Thi thử là biết ngay!</h1>
         <p>Thi thử hàng ngày giúp rèn phản xạ, nhận điểm chuẩn, biết mình đang yếu ở đâu rồi luyện tập để cải thiện nè :}</p>
         <div class="hero-actions">
-          <button class="btn-primary">🎤 2 phút kiểm tra nhanh Part 1</button>
+          <button class="btn-primary">🎤 2 phút kiểm tra nhanh</button>
           <div class="pill-row">
-            <button class="btn-outline">Part 2</button>
-            <button class="btn-outline">Part 3</button>
+            <button class="btn-outline">Level 1-2</button>
+            <button class="btn-outline">Level 3-4</button>
+            <button class="btn-outline">Level 5-6</button>
             <span class="divider-v"></span>
             <button class="btn-outline">Full Test</button>
           </div>
@@ -134,11 +135,14 @@
             <span class="t">⛗ Luyện theo OPIC</span>
             <span class="hist">↺ Lịch sử</span>
           </div>
-          <p class="desc">Nhận sửa lỗi và đánh giá band ngay sau mỗi câu.</p>
+          <p class="desc">Nhận sửa lỗi và đánh giá level ngay sau mỗi câu.</p>
           <div class="badges">
-            <button class="badge">PART 1 ›</button>
-            <button class="badge">PART 2 ›</button>
-            <button class="badge">PART 3 ›</button>
+            <button class="badge">LEVEL 1 ›</button>
+            <button class="badge">LEVEL 2 ›</button>
+            <button class="badge">LEVEL 3 ›</button>
+            <button class="badge">LEVEL 4 ›</button>
+            <button class="badge">LEVEL 5 ›</button>
+            <button class="badge">LEVEL 6 ›</button>
           </div>
         </div>
 

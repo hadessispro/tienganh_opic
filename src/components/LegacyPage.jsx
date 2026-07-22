@@ -125,8 +125,11 @@ function routeFromElement(element, pageId) {
   }
 
   if (routeByExactText.has(text)) return routeByExactText.get(text);
-  if (text.includes("2 phút kiểm tra nhanh Part 1")) return "/thi-thu/part-1";
+  if (text.includes("kiểm tra nhanh")) return "/thi-thu/part-1";
   if (text.includes("Thi thử và nhận điểm ngay")) return "/thi-thu/part-1";
+  if (text === "LEVEL 1 ›" || text === "LEVEL 2 ›" || text === "LEVEL 3 ›" || text === "Level 1-2" || text === "Level 3-4") return "/question-answer/part1";
+  if (text === "LEVEL 4 ›" || text === "LEVEL 5 ›" || text === "Level 5-6") return "/question-answer/part2";
+  if (text === "LEVEL 6 ›") return "/question-answer/part3";
   if (text === "PART 1 ›") return "/question-answer/part1";
   if (text === "PART 2 ›") return "/question-answer/part2";
   if (text === "PART 3 ›") return "/question-answer/part3";

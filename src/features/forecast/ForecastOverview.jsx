@@ -50,7 +50,7 @@ export default function ForecastOverview({ onNavigate }) {
           <TargetIcon />
         </div>
         <div>
-          <strong>Thi thử để biết band Speaking của bạn</strong>
+          <strong>Thi thử để biết level Speaking của bạn</strong>
           <p>Thi theo format OPIC để xem khả năng hiện tại của bạn.</p>
           <button type="button" onClick={() => onNavigate("/thi-thu")}>
             Thi thử Full Test
