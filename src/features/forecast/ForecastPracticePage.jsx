@@ -85,10 +85,38 @@ function scoreAnswer(transcript, durationSeconds, question) {
   if (fillerCount > 3) tips.push("Giảm filler như um/uh/like, thay bằng pause ngắn trước khi nói tiếp.");
   if (tips.length === 0) tips.push("Bài nói ổn. Lần sau thử thêm so sánh quá khứ-hiện tại hoặc một tình huống cụ thể.");
 
+  const dynamicErrors = [];
+  if (transcript.trim().length > 0) {
+    if (words.length <= 12) {
+      const firstWord = words[0] || transcript;
+      dynamicErrors.push({
+        original: transcript,
+        highlightWord: firstWord,
+        explanation: `Bài nói bị dở dang (chỉ mới nói được ${words.length} từ: "${transcript}"). Trong kỳ thi OPIc, bạn cần phát biểu câu dài hơn (tối thiểu 30-50 từ cho mỗi câu) có đầy đủ chủ ngữ - vị ngữ.`
+      });
+    } else {
+      const lower = transcript.toLowerCase();
+      if (lower.includes("it make ") || lower.includes("he make ") || lower.includes("she make ")) {
+        dynamicErrors.push({
+          original: "it make",
+          highlightWord: "make",
+          explanation: "Chủ ngữ ngôi thứ ba số ít (it/he/she) đi với động từ hiện tại đơn cần thêm 's' -> 'makes'."
+        });
+      } else {
+        const firstSentence = transcript.split(/[.!?]+/)[0] || transcript;
+        dynamicErrors.push({
+          original: firstSentence,
+          highlightWord: words[0] || "word",
+          explanation: `Ý nói "${firstSentence}" của bạn đã đúng hướng. Hãy mở rộng thêm ví dụ cụ thể để nâng band OPIc.`
+        });
+      }
+    }
+  }
+
   return {
     provider: "local-fallback",
     overall,
-    band,
+    band: words.length <= 12 ? "IL (Bài nói quá ngắn)" : band,
     durationSeconds,
     wordsPerMinute: Math.round(wordsPerMinute),
     metrics: [
@@ -99,13 +127,7 @@ function scoreAnswer(transcript, durationSeconds, question) {
     ],
     tips,
     proofread: transcript,
-    errors: [
-      {
-        original: "it make me feel excited",
-        highlightWord: "make",
-        explanation: "Chủ ngữ \"it\" là ngôi thứ ba số ít nên động từ phải thêm \"s\": \"it makes me feel excited\". Đây là lỗi chia động từ rất phổ biến khi nói nhanh."
-      }
-    ]
+    errors: dynamicErrors
   };
 }
 
@@ -473,6 +495,7 @@ export default function ForecastPracticePage({ path, onNavigate }) {
       if (data.providerWarning) setScoreError(data.providerWarning);
     } catch (error) {
       setScoreStatus("fallback");
+      setScore(scoreAnswer(currentTranscript, durationSeconds, question));
       setScoreError(
         error.message ||
           "Backend AI chưa sẵn sàng, đang dùng điểm tạm từ trình duyệt."
@@ -671,7 +694,8 @@ export default function ForecastPracticePage({ path, onNavigate }) {
 
           {(() => {
             const targetSampleText = score.sampleUpgrade || sampleAnswer;
-            const matchReport = calculateMatchingReport(transcript, targetSampleText);
+            const currentTextSnapshot = score?.proofread || transcript;
+            const matchReport = calculateMatchingReport(currentTextSnapshot, targetSampleText);
             return (
               <>
                 <div className="results-badges" style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
@@ -755,7 +779,7 @@ export default function ForecastPracticePage({ path, onNavigate }) {
                       </div>
 
                       <div className="transcript-box">
-                        {renderAnnotatedTranscript(transcript, score.errors)}
+                        {renderAnnotatedTranscript(score?.proofread || transcript, score?.errors)}
                       </div>
                       <p className="transcript-hint">Từ được tô màu là lỗi phát âm hoặc ngữ pháp cần lưu ý.</p>
 
@@ -822,7 +846,7 @@ export default function ForecastPracticePage({ path, onNavigate }) {
 
                       {/* Matching Diff Box */}
                       <div className="transcript-box sample-matching-box" style={{ lineHeight: "1.8", fontSize: "15px", background: "#ffffff", padding: "16px", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
-                        {renderSampleMatchingDiff(targetSampleText, transcript)}
+                        {renderSampleMatchingDiff(targetSampleText, currentTextSnapshot)}
                       </div>
 
                       <div className="matching-legend" style={{ display: "flex", gap: "16px", marginTop: "10px", fontSize: "13px", color: "#475569" }}>
