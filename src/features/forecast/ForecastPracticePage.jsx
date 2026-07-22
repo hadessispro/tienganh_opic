@@ -220,6 +220,114 @@ export default function ForecastPracticePage({ path, onNavigate }) {
     });
   };
 
+  const calculateMatchingReport = (learnerText, referenceText) => {
+    if (!referenceText || !referenceText.trim()) {
+      return { matchPercentage: 100, matchedCount: 0, targetWordCount: 0, completionLabel: "Hoàn thành" };
+    }
+
+    const learnerWords = (learnerText || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s']/g, " ")
+      .split(/\s+/)
+      .filter(Boolean);
+
+    const targetWords = referenceText
+      .toLowerCase()
+      .replace(/[^a-z0-9\s']/g, " ")
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (targetWords.length === 0) {
+      return { matchPercentage: 100, matchedCount: 0, targetWordCount: 0, completionLabel: "Hoàn thành" };
+    }
+
+    const freq = {};
+    learnerWords.forEach((w) => {
+      freq[w] = (freq[w] || 0) + 1;
+    });
+
+    let matchedCount = 0;
+    targetWords.forEach((w) => {
+      if (freq[w] && freq[w] > 0) {
+        freq[w] -= 1;
+        matchedCount += 1;
+      }
+    });
+
+    const percentage = Math.min(100, Math.round((matchedCount / targetWords.length) * 100));
+    let completionLabel = "";
+    if (percentage < 25) {
+      completionLabel = `Mới đọc/nói ${percentage}% đoạn nghe (Chưa hoàn thành)`;
+    } else if (percentage < 65) {
+      completionLabel = `Hoàn thành 1 phần (${percentage}% bài nghe)`;
+    } else {
+      completionLabel = `Đã nói/đọc trọn vẹn (${percentage}% bài nghe)`;
+    }
+
+    return {
+      matchPercentage: percentage,
+      matchedCount,
+      targetWordCount: targetWords.length,
+      completionLabel
+    };
+  };
+
+  const renderSampleMatchingDiff = (referenceText, learnerText) => {
+    if (!referenceText) return null;
+    const learnerWords = (learnerText || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s']/g, " ")
+      .split(/\s+/)
+      .filter(Boolean);
+
+    const learnerFreq = {};
+    learnerWords.forEach((w) => {
+      learnerFreq[w] = (learnerFreq[w] || 0) + 1;
+    });
+
+    const tokens = referenceText.split(/(\s+)/);
+
+    return tokens.map((token, idx) => {
+      const cleanToken = token.toLowerCase().replace(/[^a-z0-9']/g, "");
+      if (!cleanToken) return token;
+
+      if (learnerFreq[cleanToken] && learnerFreq[cleanToken] > 0) {
+        learnerFreq[cleanToken] -= 1;
+        return (
+          <span
+            key={idx}
+            style={{
+              color: "#15803d",
+              fontWeight: "700",
+              background: "#dcfce7",
+              padding: "1px 4px",
+              borderRadius: "3px",
+              margin: "0 1px"
+            }}
+            title="Khớp từ bài nghe mẫu"
+          >
+            {token}
+          </span>
+        );
+      } else {
+        return (
+          <span
+            key={idx}
+            style={{
+              color: "#94a3b8",
+              textDecoration: "line-through",
+              opacity: 0.6,
+              margin: "0 1px"
+            }}
+            title="Bỏ sót / Chưa đọc đến trong bài nghe mẫu"
+          >
+            {token}
+          </span>
+        );
+      }
+    });
+  };
+
   const handlePlayQuestion = () => {
     if (isPlaying && playingType === "question") {
       if (audioRef.current) {
@@ -561,141 +669,172 @@ export default function ForecastPracticePage({ path, onNavigate }) {
         <div className="evaluation-results-container">
           <h1 className="results-title">Kết quả đánh giá AI</h1>
 
-          <div className="results-badges">
-            <div className="result-badge badge-level">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                <path d="M19.62 10.4a9 9 0 01-1.9 4.77l-1.12-1.13M4 12c0-4.42 3.58-8 8-8 1.95 0 3.73.7 5.12 1.86M12 20a8 8 0 008-8m-8 8a8 8 0 01-8-8"/>
-              </svg>
-              <span>Dự đoán trình độ: <strong>{score.band}</strong></span>
-            </div>
-
-            <div className="result-badge badge-fluency">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M13 17h8m-8-4h8m-8-4h8M3 17l3-3 3 3 5-5"/>
-              </svg>
-              <span>
-                Độ trôi chảy: <strong>{score.wordsPerMinute} từ/phút</strong> ({score.wordsPerMinute >= 100 ? "Tốt" : score.wordsPerMinute >= 70 ? "Khá" : "Trung bình"})
-              </span>
-            </div>
-          </div>
-
-          {/* Horizontal Tabs */}
-          <div className="results-tabs">
-            <button
-              className={activeTab === "translation" ? "active" : ""}
-              type="button"
-              onClick={() => setActiveTab("translation")}
-            >
-              Bản dịch & Phát âm
-            </button>
-            <button
-              className={activeTab === "grammar" ? "active" : ""}
-              type="button"
-              onClick={() => setActiveTab("grammar")}
-            >
-              Sửa lỗi ngữ pháp
-            </button>
-            <button
-              className={activeTab === "sample" ? "active" : ""}
-              type="button"
-              onClick={() => setActiveTab("sample")}
-            >
-              Bài mẫu chuẩn IH/AL
-            </button>
-          </div>
-
-          {/* Tab Contents */}
-          <div className="tab-content-container">
-            {activeTab === "translation" && (
-              <div className="tab-pane-translation">
-                <div className="pane-header">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-                  </svg>
-                  <strong>Bài nói của bạn</strong>
-                  {audioUrl && (
-                    <button
-                      className="play-recording-btn"
-                      type="button"
-                      onClick={() => playUrl(audioUrl, "recording", "")}
-                    >
-                      {isPlaying && playingType === "recording" ? "Dừng nghe" : "Phát âm thanh bài nói"}
-                    </button>
-                  )}
-                </div>
-
-                <div className="transcript-box">
-                  {renderAnnotatedTranscript(transcript, score.errors)}
-                </div>
-                <p className="transcript-hint">Từ được tô màu là lỗi phát âm hoặc ngữ pháp cần lưu ý.</p>
-
-                {/* Analysis Table */}
-                {score.errors && score.errors.length > 0 ? (
-                  <div className="errors-table-container">
-                    <table className="errors-table">
-                      <thead>
-                        <tr>
-                          <th>Câu bạn đã nói</th>
-                          <th>Giải thích & Cách sửa bằng tiếng Việt</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {score.errors.map((err, idx) => (
-                          <tr key={idx}>
-                            <td className="err-original">
-                              <span className="crossed-out">{err.original}</span>
-                            </td>
-                            <td className="err-explanation">{err.explanation}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+          {(() => {
+            const targetSampleText = score.sampleUpgrade || sampleAnswer;
+            const matchReport = calculateMatchingReport(transcript, targetSampleText);
+            return (
+              <>
+                <div className="results-badges" style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
+                  <div className="result-badge badge-level">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                      <path d="M19.62 10.4a9 9 0 01-1.9 4.77l-1.12-1.13M4 12c0-4.42 3.58-8 8-8 1.95 0 3.73.7 5.12 1.86M12 20a8 8 0 008-8m-8 8a8 8 0 01-8-8"/>
+                    </svg>
+                    <span>Dự đoán trình độ: <strong>{matchReport.matchPercentage < 25 ? "IL (Bài nói quá ngắn)" : score.band}</strong></span>
                   </div>
-                ) : (
-                  <div className="no-errors-box">
-                    Chúc mừng! Không phát hiện lỗi phát âm hoặc ngữ pháp lớn nào trong câu trả lời của bạn.
+
+                  <div className="result-badge badge-fluency">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M13 17h8m-8-4h8m-8-4h8M3 17l3-3 3 3 5-5"/>
+                    </svg>
+                    <span>
+                      Độ trôi chảy: <strong>{score.wordsPerMinute} từ/phút</strong> ({score.wordsPerMinute >= 100 ? "Tốt" : score.wordsPerMinute >= 70 ? "Khá" : "Trung bình"})
+                    </span>
                   </div>
-                )}
-              </div>
-            )}
 
-            {activeTab === "grammar" && (
-              <div className="tab-pane-grammar">
-                <div className="pane-header">
-                  <strong>Bản sửa lỗi ngữ pháp hoàn chỉnh</strong>
-                </div>
-                <div className="transcript-box proofread-box">
-                  {score.proofread || transcript}
-                </div>
-                <p className="transcript-hint">Đoạn văn trên đã được AI tinh chỉnh ngữ pháp, sửa từ vựng và tối ưu hóa cấu trúc câu nói.</p>
-              </div>
-            )}
-
-            {activeTab === "sample" && (
-              <div className="tab-pane-sample">
-                <div className="pane-header">
-                  <button
-                    className="play-sample-btn"
-                    type="button"
-                    onClick={() => {
-                      if (mappedAudio?.answerAudios?.[0]) {
-                        playUrl(mappedAudio.answerAudios[0], "sample", score.sampleUpgrade);
-                      } else {
-                        speak(score.sampleUpgrade);
-                      }
+                  <div
+                    className="result-badge badge-matching-rate"
+                    style={{
+                      borderRadius: "6px",
+                      padding: "10px 16px",
+                      fontFamily: "'Inter', sans-serif",
+                      background: matchReport.matchPercentage >= 65 ? "#f0fdf4" : "#fff7ed",
+                      color: matchReport.matchPercentage >= 65 ? "#15803d" : "#c2410c",
+                      border: `1px solid ${matchReport.matchPercentage >= 65 ? "#bbf7d0" : "#ffedd5"}`
                     }}
                   >
-                    <PlayIcon /> {isPlaying && playingType === "sample" ? "Dừng nghe" : "Phát âm thanh câu mẫu chuẩn"}
+                    <span>
+                      Khớp với bài nghe mẫu: <strong>{matchReport.matchPercentage}%</strong> ({matchReport.completionLabel})
+                    </span>
+                  </div>
+                </div>
+
+                {/* Horizontal Tabs */}
+                <div className="results-tabs">
+                  <button
+                    className={activeTab === "translation" ? "active" : ""}
+                    type="button"
+                    onClick={() => setActiveTab("translation")}
+                  >
+                    Bản dịch & Phát âm
+                  </button>
+                  <button
+                    className={activeTab === "grammar" ? "active" : ""}
+                    type="button"
+                    onClick={() => setActiveTab("grammar")}
+                  >
+                    Sửa lỗi ngữ pháp
+                  </button>
+                  <button
+                    className={activeTab === "sample" ? "active" : ""}
+                    type="button"
+                    onClick={() => setActiveTab("sample")}
+                  >
+                    So sánh & Bài mẫu chuẩn IH/AL
                   </button>
                 </div>
-                <div className="transcript-box sample-box">
-                  {score.sampleUpgrade}
+
+                {/* Tab Contents */}
+                <div className="tab-content-container">
+                  {activeTab === "translation" && (
+                    <div className="tab-pane-translation">
+                      <div className="pane-header">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                        </svg>
+                        <strong>Bài nói của bạn</strong>
+                        {audioUrl && (
+                          <button
+                            className="play-recording-btn"
+                            type="button"
+                            onClick={() => playUrl(audioUrl, "recording", "")}
+                          >
+                            {isPlaying && playingType === "recording" ? "Dừng nghe" : "Phát âm thanh bài nói"}
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="transcript-box">
+                        {renderAnnotatedTranscript(transcript, score.errors)}
+                      </div>
+                      <p className="transcript-hint">Từ được tô màu là lỗi phát âm hoặc ngữ pháp cần lưu ý.</p>
+
+                      {/* Analysis Table */}
+                      {score.errors && score.errors.length > 0 ? (
+                        <div className="errors-table-container">
+                          <table className="errors-table">
+                            <thead>
+                              <tr>
+                                <th>Câu bạn đã nói</th>
+                                <th>Giải thích & Cách sửa bằng tiếng Việt</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {score.errors.map((err, idx) => (
+                                <tr key={idx}>
+                                  <td className="err-original">
+                                    <span className="crossed-out">{err.original}</span>
+                                  </td>
+                                  <td className="err-explanation">{err.explanation}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="no-errors-box">
+                          Chúc mừng! Không phát hiện lỗi phát âm hoặc ngữ pháp lớn nào trong câu trả lời của bạn.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "grammar" && (
+                    <div className="tab-pane-grammar">
+                      <div className="pane-header">
+                        <strong>Bản sửa lỗi ngữ pháp hoàn chỉnh</strong>
+                      </div>
+                      <div className="transcript-box proofread-box">
+                        {score.proofread || transcript}
+                      </div>
+                      <p className="transcript-hint">Đoạn văn trên đã được AI tinh chỉnh ngữ pháp, sửa từ vựng và tối ưu hóa cấu trúc câu nói.</p>
+                    </div>
+                  )}
+
+                  {activeTab === "sample" && (
+                    <div className="tab-pane-sample">
+                      <div className="pane-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <strong style={{ fontSize: "15px", color: "#0f172a" }}>Đối chiếu bài nói với đoạn nghe mẫu:</strong>
+                        <button
+                          className="play-sample-btn"
+                          type="button"
+                          onClick={() => {
+                            if (mappedAudio?.answerAudios?.[0]) {
+                              playUrl(mappedAudio.answerAudios[0], "sample", targetSampleText);
+                            } else {
+                              speak(targetSampleText);
+                            }
+                          }}
+                        >
+                          <PlayIcon /> {isPlaying && playingType === "sample" ? "Dừng nghe" : "Phát âm thanh bài nghe mẫu"}
+                        </button>
+                      </div>
+
+                      {/* Matching Diff Box */}
+                      <div className="transcript-box sample-matching-box" style={{ lineHeight: "1.8", fontSize: "15px", background: "#ffffff", padding: "16px", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
+                        {renderSampleMatchingDiff(targetSampleText, transcript)}
+                      </div>
+
+                      <div className="matching-legend" style={{ display: "flex", gap: "16px", marginTop: "10px", fontSize: "13px", color: "#475569" }}>
+                        <span><strong style={{ color: "#15803d", background: "#dcfce7", padding: "2px 6px", borderRadius: "4px" }}>Màu xanh</strong> = Từ bạn đã nói khớp đúng bài nghe</span>
+                        <span><strong style={{ color: "#94a3b8", textDecoration: "line-through" }}>Màu xám gạch ngang</strong> = Từ bị bỏ sót / chưa đọc đến</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <p className="transcript-hint">Bài mẫu nâng cấp band cao (mức độ IH/AL) đề xuất từ hệ thống AI.</p>
-              </div>
-            )}
-          </div>
+              </>
+            );
+          })()}
 
           <div className="results-actions">
             <button className="practice-again-btn" type="button" onClick={() => {
