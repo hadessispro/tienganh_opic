@@ -63,6 +63,13 @@ export default function MockTestPage({ onNavigate }) {
   const micIntervalRef = useRef(null);
   const recognitionRef = useRef(null);
   const transcriptsRef = useRef(Array(15).fill(""));
+  const examStateRef = useRef("idle");
+  const recordingSecondsRef = useRef(0);
+
+  const updateExamState = (newState) => {
+    examStateRef.current = newState;
+    setExamState(newState);
+  };
 
   const mockLevelAudios = {
     1: "/audio/01. Music/OPIc_01_A_01.mp3",
@@ -163,7 +170,7 @@ export default function MockTestPage({ onNavigate }) {
         },
         body: JSON.stringify({
           transcript: combined,
-          durationSeconds: 15 * 60, // 15 mins total exam time estimate
+          durationSeconds: recordingSecondsRef.current > 0 ? recordingSecondsRef.current : 15,
           question: "OPIc Full Diagnostic Test (15 Questions)",
           topic: "OPIc full mock exam feedback report",
           level: "Diagnostic Test",
@@ -361,7 +368,7 @@ export default function MockTestPage({ onNavigate }) {
   // Step 5 Test: Audio simulation
   const toggleTestQuestionAudio = () => {
     if (examState === "listening") {
-      setExamState("idle");
+      updateExamState("idle");
       clearInterval(playbarIntervalRef.current);
       setAudioProgress(0);
       return;
@@ -371,7 +378,7 @@ export default function MockTestPage({ onNavigate }) {
     stopAllAudios();
     const nextPlayCount = playCount + 1;
     setPlayCount(nextPlayCount);
-    setExamState("listening");
+    updateExamState("listening");
     setAudioProgress(0);
 
     let progress = 0;
@@ -386,10 +393,10 @@ export default function MockTestPage({ onNavigate }) {
         clearInterval(playbarIntervalRef.current);
         
         // Transition to thinking, then recording
-        setExamState("thinking");
+        updateExamState("thinking");
         setTimeout(() => {
           startTestRecording();
-        }, 1500);
+        }, 1000);
       } else {
         setAudioProgress(progress);
       }
@@ -397,7 +404,7 @@ export default function MockTestPage({ onNavigate }) {
   };
 
   const startTestRecording = () => {
-    setExamState("recording");
+    updateExamState("recording");
     const maxSec = getQuestionMaxDuration(currentQuestionIndex);
     setTestSeconds(maxSec);
     clearInterval(testTimerRef.current);
@@ -405,6 +412,7 @@ export default function MockTestPage({ onNavigate }) {
 
     let remaining = maxSec;
     testTimerRef.current = setInterval(() => {
+      recordingSecondsRef.current += 1;
       remaining -= 1;
       if (remaining <= 0) {
         clearInterval(testTimerRef.current);
@@ -420,33 +428,49 @@ export default function MockTestPage({ onNavigate }) {
       setMicFillHeight(Math.floor(Math.random() * 65) + 15);
     }, 150);
 
-    // Real client-side Web Speech API integration
+    // Real client-side Web Speech API integration with continuous auto-restart
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (Recognition) {
       const recognition = new Recognition();
       recognition.lang = "en-US";
       recognition.continuous = true;
       recognition.interimResults = true;
+
+      let baseText = transcriptsRef.current[currentQuestionIndex] || "";
       
       recognition.onresult = (event) => {
         let finalText = "";
         let interimText = "";
-        for (let i = 0; i < event.results.length; i++) {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
           const item = event.results[i];
           if (item.isFinal) finalText += `${item[0].transcript} `;
           else interimText += `${item[0].transcript} `;
         }
-        const nextText = `${finalText}${interimText}`.trim();
-        transcriptsRef.current[currentQuestionIndex] = nextText;
+        if (finalText) {
+          baseText = `${baseText} ${finalText}`.trim();
+        }
+        const fullTranscript = `${baseText} ${interimText}`.trim();
+        transcriptsRef.current[currentQuestionIndex] = fullTranscript;
         setTestTranscripts(prev => {
           const updated = [...prev];
-          updated[currentQuestionIndex] = nextText;
+          updated[currentQuestionIndex] = fullTranscript;
           return updated;
         });
       };
 
-      recognition.onerror = () => {
-        // Silent fallback
+      recognition.onend = () => {
+        // Auto-restart recognition if learner is still in recording state so taking a breath/pause won't cut off speech!
+        if (examStateRef.current === "recording") {
+          try {
+            recognition.start();
+          } catch (err) {
+            // Already active
+          }
+        }
+      };
+
+      recognition.onerror = (err) => {
+        console.warn("Speech recognition error:", err);
       };
 
       try {
