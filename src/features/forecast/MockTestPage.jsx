@@ -1282,9 +1282,9 @@ export default function MockTestPage({ onNavigate }) {
                           width: "28px", 
                           height: "24px", 
                           fontSize: "11px", 
-                          background: i === currentQuestionIndex ? "#0f172a" : i < currentQuestionIndex ? "#e2e8f0" : "#ffffff",
+                          background: i === currentQuestionIndex ? "#ea580c" : i < currentQuestionIndex ? "#e2e8f0" : "#ffffff",
                           color: i === currentQuestionIndex ? "#ffffff" : i < currentQuestionIndex ? "#475569" : "#64748b",
-                          borderColor: i === currentQuestionIndex ? "#0f172a" : "#cbd5e1"
+                          borderColor: i === currentQuestionIndex ? "#ea580c" : "#cbd5e1"
                         }}
                       >
                         {i + 1}

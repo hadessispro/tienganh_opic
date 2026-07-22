@@ -4148,7 +4148,7 @@
   background: #ffffff !important;
   border: 1px solid #7f7f7f !important;
   border-radius: 0 !important;
-  color: #0f172a !important; /* Navy button icon */
+  color: #ea580c !important; /* Orange button icon */
 }
 
 .new-opic-ui.exam-mode-active .opic-eva-playbar-slider {
@@ -4157,11 +4157,11 @@
 }
 
 .new-opic-ui.exam-mode-active .opic-eva-playbar-slider-fill {
-  background: #0f172a !important; /* Navy slider fill */
+  background: #ea580c !important; /* Orange slider fill */
 }
 
 .new-opic-ui.exam-mode-active .opic-eva-status-banner {
-  background: #0f172a !important; /* Navy status background */
+  background: #ea580c !important; /* Orange status background */
   color: #ffffff !important;
   font-size: 15px !important;
   font-weight: 700 !important;
@@ -4187,13 +4187,13 @@
 }
 
 .new-opic-ui.exam-mode-active .opic-playcount-box.active {
-  background: #0f172a !important; /* Navy active box */
+  background: #ea580c !important; /* Orange active box */
   color: #ffffff !important;
-  border-color: #0f172a !important;
+  border-color: #ea580c !important;
 }
 
 .new-opic-ui.exam-mode-active .opic-status-banner-large {
-  background: #0f172a !important; /* Navy status banner */
+  background: #ea580c !important; /* Orange status banner */
   color: #ffffff !important;
   border-radius: 6px !important;
   box-shadow: none !important;
@@ -4205,7 +4205,7 @@
 
 .new-opic-ui.exam-mode-active .opic-timer-circle {
   background: #ffeeb2 !important; /* Yellow circle */
-  border: 2px solid #0f172a !important;
+  border: 2px solid #ea580c !important;
   box-shadow: none !important;
   width: 90px !important;
   height: 90px !important;
@@ -4221,7 +4221,7 @@
 }
 
 .new-opic-ui.exam-mode-active .opic-next-btn {
-  background: #0f172a !important; /* Navy Next button */
+  background: #ea580c !important; /* Orange Next button */
   color: #ffffff !important;
   border-radius: 4px !important;
   font-size: 15px !important;
@@ -4233,7 +4233,7 @@
 }
 
 .new-opic-ui.exam-mode-active .opic-next-btn:hover {
-  background: #1e293b !important;
+  background: #c2410c !important;
   transform: none !important;
 }
 
