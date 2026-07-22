@@ -27,20 +27,35 @@ function fallbackScore(payload) {
     .filter(Boolean);
   const unique = new Set(words);
   const durationSec = Number(payload.durationSeconds) || 0;
+
+  // Calculate completion rate based on expected word count (~180 words for full test or ~30 for single question)
+  const isFullTest = Array.isArray(payload.details) && payload.details.length > 1;
+  const targetWords = isFullTest ? 180 : 30;
+  const completionPercentage = Math.min(100, Math.round((words.length / targetWords) * 100));
+
+  let completionStatus = "";
+  if (completionPercentage < 25) {
+    completionStatus = `Chưa hoàn thành (${completionPercentage}% nội dung - Bài nói quá ngắn)`;
+  } else if (completionPercentage < 65) {
+    completionStatus = `Hoàn thành 1 phần (${completionPercentage}% nội dung)`;
+  } else {
+    completionStatus = `Hoàn thành trọn vẹn (${completionPercentage}% nội dung)`;
+  }
+
   const wpm = durationSec > 0 ? Math.round((words.length / durationSec) * 60) : Math.round(words.length * 1.5);
   const overall = Math.max(35, Math.min(88, Math.round(38 + words.length * 0.7 + unique.size * 0.35)));
-  const level = overall >= 78 ? "IH" : overall >= 64 ? "IM3" : overall >= 52 ? "IM1-IM2" : "IL";
+  const level = completionPercentage < 25 ? "IL (Bài nói quá ngắn)" : (overall >= 78 ? "IH" : overall >= 64 ? "IM3" : overall >= 52 ? "IM1-IM2" : "IL");
 
   // Dynamic error feedback generated specifically from the learner's ACTUAL transcript text
   const dynamicErrors = [];
 
   if (transcript.length > 0) {
-    if (words.length <= 8) {
+    if (words.length <= 12) {
       const firstWord = words[0] || transcript;
       dynamicErrors.push({
         original: transcript,
         highlightWord: firstWord,
-        explanation: `Câu trả lời khá ngắn (chỉ có ${words.length} từ: "${transcript}"). Trong kỳ thi OPIc, bạn nên phát triển câu trả lời thành câu hoàn chỉnh có chủ ngữ - vị ngữ (ví dụ: "It is located in downtown...") và bổ sung thêm 2-3 câu chi tiết để đạt band điểm IM/IH.`
+        explanation: `Bài nói bị dở dang (chỉ mới nói được ${words.length} từ: "${transcript}"). Trong kỳ thi OPIc, để được tính là hoàn thành và đạt band điểm IM/IH, bạn cần nói hết câu dài hơn (tối thiểu 30-50 từ cho mỗi câu) có đầy đủ ý.`
       });
     } else {
       const lower = transcript.toLowerCase();
@@ -80,17 +95,21 @@ function fallbackScore(payload) {
     level,
     overall,
     wordsPerMinute: wpm,
+    completionPercentage,
+    completionStatus,
     rubric: rubricKeys.map((name, index) => ({
       name,
       score: Math.max(30, Math.min(95, overall - 6 + index * 3)),
-      feedback: `Đánh giá dựa trên bài nói thực tế: "${transcript.slice(0, 35)}${transcript.length > 35 ? "..." : ""}"`
+      feedback: `Đánh giá dựa trên bài nói thực tế (${completionPercentage}% hoàn thành): "${transcript.slice(0, 35)}${transcript.length > 35 ? "..." : ""}"`
     })),
     strengths: [
-      `Bài nói đã được ghi nhận: "${transcript.slice(0, 60)}${transcript.length > 60 ? "..." : ""}".`,
+      `Bài nói đã được ghi nhận (${completionPercentage}% nội dung): "${transcript.slice(0, 60)}${transcript.length > 60 ? "..." : ""}".`,
       "Có phản xạ nói tiếng Anh trực tiếp."
     ],
     improvements: [
-      "Mở rộng thêm chi tiết và ví dụ thực tế bám sát câu hỏi OPIc.",
+      completionPercentage < 50
+        ? "Cần đọc/nói hết trọn vẹn đoạn văn để đạt tỷ lệ hoàn thành 100% cho bài thi OPIc."
+        : "Mở rộng thêm chi tiết và ví dụ thực tế bám sát câu hỏi OPIc.",
       "Sử dụng thêm các liên từ (linking words) để liên kết câu mạch lạc hơn."
     ],
     sampleUpgrade: transcript
@@ -120,6 +139,7 @@ function buildPrompt(payload) {
   return [
     "You are a strict, expert OPIC speaking examiner and coach.",
     "Evaluate the learner's actual responses against the OPIC rubric criteria.",
+    "Assess both OPIC speaking proficiency and RESPONSE COMPLETENESS (did the learner finish speaking the required answer or cut off early?).",
     "CRITICAL REQUIREMENT: For the 'errors' array, you MUST ONLY extract actual incorrect phrases or weaknesses directly from the learner's provided answers. Do NOT invent or use generic example sentences.",
     "Return ONLY valid JSON. Do not wrap in markdown.",
     "",
@@ -128,6 +148,8 @@ function buildPrompt(payload) {
     '  "level": "IL | IM1 | IM2 | IM3 | IH | AL",',
     '  "overall": 0-100,',
     '  "wordsPerMinute": number,',
+    '  "completionPercentage": 0-100,',
+    '  "completionStatus": "Vietnamese status string, e.g. Chưa hoàn thành (15% nội dung - Bài nói quá ngắn) or Hoàn thành trọn vẹn (100% nội dung)",',
     '  "rubric": [',
     '    { "name": "Global Tasks and Functions", "score": 0-100, "feedback": "Vietnamese feedback" },',
     '    { "name": "Context / Content", "score": 0-100, "feedback": "Vietnamese feedback" },',
@@ -162,6 +184,8 @@ function normalizeScore(data, provider) {
     level: String(data.level || "IM"),
     overall: Number(data.overall || 0),
     wordsPerMinute: Number(data.wordsPerMinute || 0),
+    completionPercentage: Number(data.completionPercentage ?? 100),
+    completionStatus: String(data.completionStatus || ""),
     rubric: rubricKeys.map((name, index) => {
       const item = rubric.find((entry) => entry?.name === name) || rubric[index] || {};
       return {

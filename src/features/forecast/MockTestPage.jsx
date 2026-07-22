@@ -187,6 +187,8 @@ export default function MockTestPage({ onNavigate }) {
         band: data.level || "IM1",
         overall: data.overall || 50,
         wordsPerMinute: data.wordsPerMinute || 85,
+        completionPercentage: data.completionPercentage ?? 100,
+        completionStatus: data.completionStatus || "Hoàn thành bài thi",
         errors: data.errors || [],
         proofread: data.proofread || combined,
         sampleUpgrade: data.sampleUpgrade || "Try expanding your sentences with personal details and compound structures."
@@ -1394,14 +1396,30 @@ export default function MockTestPage({ onNavigate }) {
                 Kết Quả Phân Tích Bài Thi AI
               </h1>
 
-              <div className="results-badges" style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+              <div className="results-badges" style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
                 <div className="result-badge badge-level" style={{ borderRadius: "6px", padding: "10px 16px", fontFamily: "'Inter', sans-serif" }}>
                   <span>Dự đoán trình độ: <strong>{testScore.band}</strong></span>
                 </div>
 
                 <div className="result-badge badge-fluency" style={{ borderRadius: "6px", padding: "10px 16px", fontFamily: "'Inter', sans-serif" }}>
                   <span>
-                    Độ trôi chảy trung bình: <strong>{testScore.wordsPerMinute} WPM</strong>
+                    Độ trôi chảy: <strong>{testScore.wordsPerMinute} WPM</strong>
+                  </span>
+                </div>
+
+                <div 
+                  className="result-badge badge-completion" 
+                  style={{ 
+                    borderRadius: "6px", 
+                    padding: "10px 16px", 
+                    fontFamily: "'Inter', sans-serif",
+                    background: testScore.completionPercentage >= 65 ? "#f1f5f9" : "#fff7ed",
+                    color: testScore.completionPercentage >= 65 ? "#0f172a" : "#c2410c",
+                    border: `1px solid ${testScore.completionPercentage >= 65 ? "#cbd5e1" : "#ffedd5"}`
+                  }}
+                >
+                  <span>
+                    Độ hoàn thành bài nói: <strong>{testScore.completionStatus || `${testScore.completionPercentage}%`}</strong>
                   </span>
                 </div>
               </div>
