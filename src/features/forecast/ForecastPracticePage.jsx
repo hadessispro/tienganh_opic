@@ -4,7 +4,7 @@ import ForecastLayout from "./ForecastLayout";
 import { BikeIcon, HouseIcon, MicIcon, PlayIcon } from "./ForecastIcons";
 import { parseQuestionPath, questionPath, forecastTopics } from "./forecastData";
 import { opicAudioMap } from "../../data/opicAudioMap.generated";
-import { SentenceSpeaker, splitIntoSentences } from "../../lib/speechUtils";
+import { SentenceSpeaker, splitIntoSentences, getBestEnglishVoice } from "../../lib/speechUtils";
 
 const topicTranslations = {
   "Work": "Công việc",
@@ -195,6 +195,9 @@ export default function ForecastPracticePage({ path, onNavigate }) {
 
   const [readMode, setReadMode] = useState("sentence"); // "sentence" | "continuous"
   const [pauseDuration, setPauseDuration] = useState(900); // ms pause between sentences
+  const [voiceGender, setVoiceGender] = useState("female"); // "female" | "male"
+  const [audioSource, setAudioSource] = useState("tts"); // "tts" | "mp3"
+  const [isTranscribingServer, setIsTranscribingServer] = useState(false);
   const [activeSentenceIndex, setActiveSentenceIndex] = useState(-1);
   const sentenceSpeakerRef = useRef(null);
 
@@ -494,8 +497,11 @@ export default function ForecastPracticePage({ path, onNavigate }) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-US";
-    utterance.rate = 0.92;
+    utterance.rate = 0.90;
     utterance.pitch = 1;
+    const bestVoice = getBestEnglishVoice(voiceGender);
+    if (bestVoice) utterance.voice = bestVoice;
+
     utterance.onend = () => {
       setIsPlaying(false);
       setPlayingType(null);
@@ -520,28 +526,32 @@ export default function ForecastPracticePage({ path, onNavigate }) {
 
   const beginRecognition = () => {
     if (!recognitionSupported) return;
-    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new Recognition();
-    recognition.lang = "en-US";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.onresult = (event) => {
-      let finalText = "";
-      let interimText = "";
-      for (let index = 0; index < event.results.length; index += 1) {
-        const item = event.results[index];
-        if (item.isFinal) finalText += `${item[0].transcript} `;
-        else interimText += `${item[0].transcript} `;
-      }
-      const nextTranscript = `${finalText}${interimText}`.trim();
-      transcriptRef.current = nextTranscript;
-      setTranscript(nextTranscript);
-    };
-    recognition.onerror = () => {
-      setRecorderError("Chrome không trả transcript ổn định, nhưng bản ghi âm vẫn được lưu trong phiên này.");
-    };
-    recognition.start();
-    recognitionRef.current = recognition;
+    try {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new Recognition();
+      recognition.lang = "en-US";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.onresult = (event) => {
+        let finalText = "";
+        let interimText = "";
+        for (let index = 0; index < event.results.length; index += 1) {
+          const item = event.results[index];
+          if (item.isFinal) finalText += `${item[0].transcript} `;
+          else interimText += `${item[0].transcript} `;
+        }
+        const nextTranscript = `${finalText}${interimText}`.trim();
+        transcriptRef.current = nextTranscript;
+        setTranscript(nextTranscript);
+      };
+      recognition.onerror = () => {
+        setRecorderError("Hệ thống sẽ dùng AI Server nhận diện giọng nói từ file ghi âm của bạn.");
+      };
+      recognition.start();
+      recognitionRef.current = recognition;
+    } catch {
+      // Speech recognition non-critical fail, will fallback to server transcribe
+    }
   };
 
   const scoreWithBackend = async (currentTranscript, durationSeconds) => {
@@ -598,35 +608,72 @@ export default function ForecastPracticePage({ path, onNavigate }) {
     }
 
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-      setRecorderError("Trình duyệt này chưa hỗ trợ ghi âm trực tiếp. Dùng Chrome/Edge mới nhất sẽ ổn nhất.");
+      setRecorderError("Trình duyệt này chưa hỗ trợ ghi âm trực tiếp. Hãy dùng Safari hoặc Chrome mới nhất.");
       return;
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       chunksRef.current = [];
-      const recorder = new MediaRecorder(stream);
+      const mimeType = window.MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : window.MediaRecorder.isTypeSupported("audio/mp4")
+        ? "audio/mp4"
+        : "audio/aac";
+
+      const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
+
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) chunksRef.current.push(event.data);
       };
-      recorder.onstop = () => {
+
+      recorder.onstop = async () => {
         stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
-        setAudioUrl(URL.createObjectURL(blob));
+        const audioBlob = new Blob(chunksRef.current, { type: recorder.mimeType || mimeType });
+        setAudioUrl(URL.createObjectURL(audioBlob));
         const duration = Math.max(1, Math.round((Date.now() - startedAtRef.current) / 1000));
-        const finalTranscript = transcriptRef.current.trim();
-        const localScore = scoreAnswer(finalTranscript, duration, question);
-        setTranscript(finalTranscript);
-        setScore(localScore);
+        let finalTranscript = transcriptRef.current.trim();
+
         setRecordingState("scored");
+        setScoreStatus("scoring");
+
+        // Mobile Web & iOS Safari Whisper Server Transcription Fallback
+        setIsTranscribingServer(true);
+        try {
+          const formData = new FormData();
+          const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("aac") ? "aac" : "webm";
+          formData.append("audio", audioBlob, `recording.${ext}`);
+          formData.append("durationSeconds", duration);
+
+          const res = await fetch("/api/transcribe", {
+            method: "POST",
+            body: formData
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.text && data.text.trim()) {
+            finalTranscript = data.text.trim();
+          }
+        } catch (e) {
+          console.warn("Mobile server transcribe failed, falling back to client transcript", e);
+        } finally {
+          setIsTranscribingServer(false);
+        }
+
+        setTranscript(finalTranscript);
+
         if (finalTranscript) {
+          const localScore = scoreAnswer(finalTranscript, duration, question);
+          setScore(localScore);
           scoreWithBackend(finalTranscript, duration);
         } else {
+          const localScore = scoreAnswer("", duration, question);
+          setScore(localScore);
           setScoreStatus("fallback");
-          setScoreError("Chưa có transcript để gửi AI. Hãy nói rõ hơn hoặc dùng Chrome để bật Speech Recognition.");
+          setScoreError("Chưa nhận diện được giọng nói. Hãy kiểm tra lại micro, thử nói to hơn hoặc chọn mẫu câu bên dưới để ghi âm lại.");
         }
       };
+
       recorder.start();
       beginRecognition();
       startedAtRef.current = Date.now();
@@ -635,7 +682,7 @@ export default function ForecastPracticePage({ path, onNavigate }) {
         setRecordingSeconds(Math.round((Date.now() - startedAtRef.current) / 1000));
       }, 500);
     } catch {
-      setRecorderError("Chưa cấp quyền microphone. Cho phép mic rồi bấm ghi âm lại nhé.");
+      setRecorderError("Chưa cấp quyền microphone. Hãy cho phép mic trên trình duyệt điện thoại/máy tính rồi bấm ghi âm lại.");
     }
   };
 
@@ -672,20 +719,25 @@ export default function ForecastPracticePage({ path, onNavigate }) {
         {!score ? (
         <div className="practice-room-container">
           <h1 className="practice-room-title">Phòng luyện tập</h1>
-          <div className="question-display-card">
-            <div className="question-card-header">
-              <div className="topic-badge">
-                <span style={{ fontSize: "18px" }}>📋</span>
-                <strong>{vietnameseTopic} ({question.topic})</strong>
+          {/* Unified Question & Eva Examiner Card */}
+          <div className="unified-question-eva-card">
+            {/* Card Header: Topic & Controls */}
+            <div className="unified-card-header">
+              <div className="topic-info">
+                <span className="topic-icon">📋</span>
+                <div>
+                  <h2 className="topic-title">{vietnameseTopic} ({question.topic})</h2>
+                  <span className="question-count">Câu {questionIndex}/{totalQuestions} — Đề thi OPIC</span>
+                </div>
               </div>
 
-              <div className="reading-controls-bar">
+              <div className="controls-toolbar">
                 <div className="mode-toggle-group">
                   <button
                     type="button"
                     className={`mode-toggle-btn ${readMode === "sentence" ? "active" : ""}`}
                     onClick={() => setReadMode("sentence")}
-                    title="Tự động tách câu & tạm dừng sau mỗi dấu câu"
+                    title="Tự động ngắt nghỉ sau mỗi dấu câu"
                   >
                     ⏸️ Tách câu & Ngắt nghỉ
                   </button>
@@ -707,79 +759,114 @@ export default function ForecastPracticePage({ path, onNavigate }) {
                       onChange={(e) => setPauseDuration(Number(e.target.value))}
                       title="Thời gian tạm dừng giữa các câu"
                     >
-                      <option value={500}>⚡ 0.5 giây</option>
-                      <option value={900}>👍 0.9 giây (Chuẩn)</option>
-                      <option value={1500}>🐢 1.5 giây (Vừa)</option>
-                      <option value={2200}>⏳ 2.2 giây (Chậm)</option>
+                      <option value={500}>⚡ 0.5s</option>
+                      <option value={900}>👍 0.9s (Chuẩn)</option>
+                      <option value={1500}>🐢 1.5s (Vừa)</option>
+                      <option value={2200}>⏳ 2.2s (Chậm)</option>
                     </select>
                   </div>
                 )}
+
+                <div className="voice-picker">
+                  <span>Giọng đọc:</span>
+                  <select
+                    value={voiceGender}
+                    onChange={(e) => setVoiceGender(e.target.value)}
+                    title="Chọn giọng nữ hoặc giọng nam chuẩn Mỹ"
+                  >
+                    <option value="female">👩 Eva (Nữ chuẩn)</option>
+                    <option value="male">👨 Examiner (Nam chuẩn)</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div className="question-sentence-list">
-              {questionSentences.map((sentenceText, idx) => {
-                const isSpeakingThis = isPlaying && playingType === "question" && activeSentenceIndex === idx;
-                return (
-                  <div
-                    key={idx}
-                    className={`sentence-chip ${isSpeakingThis ? "is-speaking" : ""}`}
-                    onClick={() => handlePlaySingleSentence(sentenceText, idx)}
-                    title="Click để nghe riêng câu này"
-                  >
-                    <span className="sentence-badge">{idx + 1}</span>
-                    <span className="sentence-body">{sentenceText}</span>
-                    <button
-                      type="button"
-                      className="play-single-sentence-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePlaySingleSentence(sentenceText, idx);
-                      }}
-                      title="Nghe riêng câu này"
-                    >
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-                      </svg>
-                    </button>
+            {/* Card Main Body: Eva Examiner + Interactive Sentences */}
+            <div className="unified-card-body">
+              {/* Left Side: Eva Avatar & Main Action Button */}
+              <div className="eva-side-panel">
+                <div className="eva-avatar-wrapper">
+                  <div className={`eva-avatar ${isPlaying && playingType === "question" ? "is-speaking-avatar" : ""}`}>
+                    <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="#2563eb" strokeWidth="1.8">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
                   </div>
-                );
-              })}
+                  <div className="eva-meta">
+                    <strong className="eva-name">Eva</strong>
+                    <span className="eva-role">Giám khảo ảo OPIc</span>
+                  </div>
+                </div>
+
+                <button
+                  className={`play-question-btn ${isPlaying && playingType === "question" ? "is-playing" : ""}`}
+                  type="button"
+                  onClick={handlePlayQuestion}
+                  disabled={listenCount <= 0 && !(isPlaying && playingType === "question")}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                  </svg>
+                  <span>
+                    {isPlaying && playingType === "question" ? "Dừng nghe" : `Nghe toàn bộ câu hỏi (Còn ${listenCount} lần)`}
+                  </span>
+                </button>
+
+                {isPlaying && playingType === "question" && (
+                  <div className="eva-speaking-status">
+                    <span className="wave-dot"></span>
+                    <span>
+                      {activeSentenceIndex >= 0
+                        ? `Đang đọc câu ${activeSentenceIndex + 1}/${questionSentences.length}...`
+                        : "Đang phát âm thanh..."}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Side: Sentence Chips */}
+              <div className="sentences-main-panel">
+                <div className="panel-title">Nội dung câu hỏi (Bấm vào từng câu để nghe riêng):</div>
+                <div className="question-sentence-list">
+                  {questionSentences.map((sentenceText, idx) => {
+                    const isSpeakingThis = isPlaying && playingType === "question" && activeSentenceIndex === idx;
+                    return (
+                      <div
+                        key={idx}
+                        className={`sentence-chip ${isSpeakingThis ? "is-speaking" : ""}`}
+                        onClick={() => handlePlaySingleSentence(sentenceText, idx)}
+                        title="Bấm để nghe riêng câu này"
+                      >
+                        <span className="sentence-badge">{idx + 1}</span>
+                        <span className="sentence-body">{sentenceText}</span>
+                        <button
+                          type="button"
+                          className="play-single-sentence-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePlaySingleSentence(sentenceText, idx);
+                          }}
+                          title="Nghe riêng câu này"
+                        >
+                          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                          </svg>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             <div className="sentence-box-footer">
               <span className="hint-text">
-                💡 <strong>Mẹo luyện tập:</strong> Khi chọn <strong>"Tách câu & Ngắt nghỉ"</strong>, hệ thống sẽ dừng lại <strong>{pauseDuration / 1000}s</strong> sau mỗi câu để bạn kịp nghe & ngấm ý. Bạn có thể bấm vào từng câu ở trên để nghe lại riêng câu đó.
+                💡 <strong>Đã đồng bộ hoá:</strong> Giám khảo Eva và các câu <code>[1]</code>, <code>[2]</code>, <code>[3]</code>... được kết nối 100% cùng 1 hệ thống. Khi chọn <strong>"Tách câu & Ngắt nghỉ"</strong>, Eva sẽ dừng nghỉ <strong>{pauseDuration / 1000}s</strong> sau mỗi dấu câu giúp bạn ngấm ý.
               </span>
             </div>
           </div>
 
           <div className="practice-cards-wrapper">
-            {/* Eva Virtual Examiner Card */}
-            <div className="eva-card">
-              <div className="eva-avatar">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#9da4b0" strokeWidth="1.5">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </div>
-              <h2 className="eva-name">Eva</h2>
-              <p className="eva-title">Giám khảo ảo OPIc</p>
-              <button
-                className="play-question-btn"
-                type="button"
-                onClick={handlePlayQuestion}
-                disabled={listenCount <= 0 && !(isPlaying && playingType === "question")}
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-                </svg>
-                <span>
-                  {isPlaying && playingType === "question" ? "Dừng nghe" : `Nghe câu hỏi (Còn ${listenCount} lần)`}
-                </span>
-              </button>
-            </div>
-
             {/* Microphone Recording Card */}
             <div className="record-card">
               <button
