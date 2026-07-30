@@ -4,6 +4,7 @@ import ForecastLayout from "./ForecastLayout";
 import { BikeIcon, HouseIcon, MicIcon, PlayIcon } from "./ForecastIcons";
 import { parseQuestionPath, questionPath, forecastTopics } from "./forecastData";
 import { opicAudioMap } from "../../data/opicAudioMap.generated";
+import { SentenceSpeaker, splitIntoSentences } from "../../lib/speechUtils";
 
 const topicTranslations = {
   "Work": "Công việc",
@@ -192,6 +193,15 @@ export default function ForecastPracticePage({ path, onNavigate }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeTab, setActiveTab] = useState("translation");
 
+  const [readMode, setReadMode] = useState("sentence"); // "sentence" | "continuous"
+  const [pauseDuration, setPauseDuration] = useState(900); // ms pause between sentences
+  const [activeSentenceIndex, setActiveSentenceIndex] = useState(-1);
+  const sentenceSpeakerRef = useRef(null);
+
+  const questionSentences = useMemo(() => {
+    return splitIntoSentences(question.text);
+  }, [question.text]);
+
   const topicQuestions = useMemo(() => {
     if (!question.topic || !forecastTopics) return [];
     const partTopics = forecastTopics[question.part] || [];
@@ -350,25 +360,71 @@ export default function ForecastPracticePage({ path, onNavigate }) {
     });
   };
 
+  useEffect(() => {
+    sentenceSpeakerRef.current = new SentenceSpeaker({
+      pauseDuration,
+      rate: 0.92,
+      onSentenceChange: (idx) => {
+        setActiveSentenceIndex(idx);
+      },
+      onEnd: () => {
+        setIsPlaying(false);
+        setPlayingType(null);
+        setActiveSentenceIndex(-1);
+      }
+    });
+
+    return () => {
+      if (sentenceSpeakerRef.current) {
+        sentenceSpeakerRef.current.stop();
+      }
+    };
+  }, [pauseDuration]);
+
   const handlePlayQuestion = () => {
     if (isPlaying && playingType === "question") {
       if (audioRef.current) {
         audioRef.current.pause();
       }
+      if (sentenceSpeakerRef.current) {
+        sentenceSpeakerRef.current.stop();
+      }
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
       setIsPlaying(false);
       setPlayingType(null);
+      setActiveSentenceIndex(-1);
       return;
     }
 
     if (listenCount <= 0) return;
 
     setListenCount(prev => prev - 1);
+    setIsPlaying(true);
+    setPlayingType("question");
 
-    if (mappedAudio?.questionAudio) {
-      playUrl(mappedAudio.questionAudio, "question", question.text);
+    if (readMode === "sentence") {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      sentenceSpeakerRef.current.speak(question.text, pauseDuration);
     } else {
-      speak(question.text);
+      if (mappedAudio?.questionAudio) {
+        playUrl(mappedAudio.questionAudio, "question", question.text);
+      } else {
+        speakContinuous(question.text);
+      }
     }
+  };
+
+  const handlePlaySingleSentence = (sentenceText, idx) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setIsPlaying(true);
+    setPlayingType("question");
+    sentenceSpeakerRef.current.speakSingleSentence(sentenceText, idx);
   };
 
   useEffect(() => {
@@ -380,6 +436,9 @@ export default function ForecastPracticePage({ path, onNavigate }) {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
+      }
+      if (sentenceSpeakerRef.current) {
+        sentenceSpeakerRef.current.stop();
       }
     };
   }, [audioUrl]);
@@ -396,6 +455,7 @@ export default function ForecastPracticePage({ path, onNavigate }) {
       if (isSame && isPlaying) {
         setIsPlaying(false);
         setPlayingType(null);
+        setActiveSentenceIndex(-1);
         return;
       }
     }
@@ -409,10 +469,12 @@ export default function ForecastPracticePage({ path, onNavigate }) {
     audio.addEventListener("ended", () => {
       setIsPlaying(false);
       setPlayingType(null);
+      setActiveSentenceIndex(-1);
     });
     audio.addEventListener("pause", () => {
       setIsPlaying(false);
       setPlayingType(null);
+      setActiveSentenceIndex(-1);
     });
     audio.addEventListener("error", () => {
       setIsPlaying(false);
@@ -427,14 +489,33 @@ export default function ForecastPracticePage({ path, onNavigate }) {
     });
   };
 
-  const speak = (text) => {
+  const speakContinuous = (text) => {
     if (!speechSupported || !text) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-US";
     utterance.rate = 0.92;
     utterance.pitch = 1;
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setPlayingType(null);
+      setActiveSentenceIndex(-1);
+    };
+    utterance.onerror = () => {
+      setIsPlaying(false);
+      setPlayingType(null);
+      setActiveSentenceIndex(-1);
+    };
     window.speechSynthesis.speak(utterance);
+  };
+
+  const speak = (text) => {
+    if (!speechSupported || !text) return;
+    if (readMode === "sentence") {
+      sentenceSpeakerRef.current.speak(text, pauseDuration);
+    } else {
+      speakContinuous(text);
+    }
   };
 
   const beginRecognition = () => {
@@ -591,9 +672,87 @@ export default function ForecastPracticePage({ path, onNavigate }) {
         {!score ? (
         <div className="practice-room-container">
           <h1 className="practice-room-title">Phòng luyện tập</h1>
-          <p className="practice-room-subtitle">
-            Cụm đề {vietnameseTopic} — Câu {questionIndex}/{totalQuestions}. Nghe câu hỏi từ Eva và ghi âm câu trả lời của bạn.
-          </p>
+          <div className="question-display-card">
+            <div className="question-card-header">
+              <div className="topic-badge">
+                <span style={{ fontSize: "18px" }}>📋</span>
+                <strong>{vietnameseTopic} ({question.topic})</strong>
+              </div>
+
+              <div className="reading-controls-bar">
+                <div className="mode-toggle-group">
+                  <button
+                    type="button"
+                    className={`mode-toggle-btn ${readMode === "sentence" ? "active" : ""}`}
+                    onClick={() => setReadMode("sentence")}
+                    title="Tự động tách câu & tạm dừng sau mỗi dấu câu"
+                  >
+                    ⏸️ Tách câu & Ngắt nghỉ
+                  </button>
+                  <button
+                    type="button"
+                    className={`mode-toggle-btn ${readMode === "continuous" ? "active" : ""}`}
+                    onClick={() => setReadMode("continuous")}
+                    title="Đọc liền 1 lèo cả đoạn"
+                  >
+                    ▶️ Đọc liên tục
+                  </button>
+                </div>
+
+                {readMode === "sentence" && (
+                  <div className="pause-picker">
+                    <span>Khoảng nghỉ:</span>
+                    <select
+                      value={pauseDuration}
+                      onChange={(e) => setPauseDuration(Number(e.target.value))}
+                      title="Thời gian tạm dừng giữa các câu"
+                    >
+                      <option value={500}>⚡ 0.5 giây</option>
+                      <option value={900}>👍 0.9 giây (Chuẩn)</option>
+                      <option value={1500}>🐢 1.5 giây (Vừa)</option>
+                      <option value={2200}>⏳ 2.2 giây (Chậm)</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="question-sentence-list">
+              {questionSentences.map((sentenceText, idx) => {
+                const isSpeakingThis = isPlaying && playingType === "question" && activeSentenceIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    className={`sentence-chip ${isSpeakingThis ? "is-speaking" : ""}`}
+                    onClick={() => handlePlaySingleSentence(sentenceText, idx)}
+                    title="Click để nghe riêng câu này"
+                  >
+                    <span className="sentence-badge">{idx + 1}</span>
+                    <span className="sentence-body">{sentenceText}</span>
+                    <button
+                      type="button"
+                      className="play-single-sentence-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePlaySingleSentence(sentenceText, idx);
+                      }}
+                      title="Nghe riêng câu này"
+                    >
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="sentence-box-footer">
+              <span className="hint-text">
+                💡 <strong>Mẹo luyện tập:</strong> Khi chọn <strong>"Tách câu & Ngắt nghỉ"</strong>, hệ thống sẽ dừng lại <strong>{pauseDuration / 1000}s</strong> sau mỗi câu để bạn kịp nghe & ngấm ý. Bạn có thể bấm vào từng câu ở trên để nghe lại riêng câu đó.
+              </span>
+            </div>
+          </div>
 
           <div className="practice-cards-wrapper">
             {/* Eva Virtual Examiner Card */}
